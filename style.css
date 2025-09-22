@@ -103,7 +103,16 @@ button:active { transform: translateY(1px); }
 }
 .fab:hover { background: var(--success-dark); }
 .fab:active { transform: translateY(1px); }
-
+/* Увеличить плавающую кнопку на мобильных */
+@media (max-width: 600px) {
+  .fab {
+    width: 120px;
+    height: 120px;
+    font-size: 45px;
+    bottom: 32px;
+    right: 32px;
+  }
+}
 /* ========== МОДАЛКА ========== */
 .modal {
   display: none;                      /* включаешь display:flex через JS */
@@ -152,3 +161,4 @@ button:active { transform: translateY(1px); }
   .container { padding: 22px 24px; }
   button { width: auto; }             /* на десктопе кнопки по контенту */
 }
+
