@@ -1,123 +1,75 @@
-/* Общий фон и контейнер */
+/* Базовая сетка */
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
 body {
-  font-family: Arial, sans-serif;
-  background-color: #0093dd;
-  display: flex;
-  justify-content: center;
-  padding: 30px;
+  min-height: 100dvh;           /* лучше для мобил */
+  background: #118bd3;          /* твой фон */
+  font-family: system-ui, Arial, sans-serif;
 }
 
+/* Карточка-обёртка */
 .container {
-  background: white;
-  padding: 20px;
+  width: min(92vw, 720px);      /* адаптивная ширина */
+  margin: 24px auto;
+  padding: 16px 18px;
+  background: #fff;
   border-radius: 10px;
-  width: 500px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  box-shadow: 0 6px 20px rgba(0,0,0,.12);
 }
 
-/* Карточки задач */
-.task-card {
-  background-color: #00b734;
-  margin-top: 10px;
-  padding: 10px;
-  border-radius: 5px;
-  color: white;
+/* Заголовок поменьше на телефонах */
+h1 { 
+  font-size: clamp(18px, 4.5vw, 26px);
+  line-height: 1.25;
+  margin: 0 0 10px;
 }
 
-.overdue {
-  background-color: #b32424 !important;
-  color: white;
+/* Формы и контролы — на всю ширину */
+.form-group,
+select, input, textarea, button {
+  width: 100%;
 }
 
-/* Плавающая кнопка */
+select, input, textarea {
+  padding: 10px 12px;
+  border: 1px solid #d6d6d6;
+  border-radius: 8px;
+  font-size: 16px;              /* чтобы не вызывал зум на iOS */
+}
+
+/* Кнопки */
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 10px;
+  background: #0ea5e9;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+button:active { transform: translateY(1px); }
+
+/* Плавающая кнопка “+” (если она у тебя есть) */
 .fab {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
+  right: 16px;
+  bottom: 16px;
+  width: 56px; height: 56px;
   border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  font-size: 30px;
-  cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-  transition: background 0.3s ease;
+  display: grid; place-items: center;
+  background: #22c55e;
+  color: #fff; font-size: 28px;
 }
 
-.fab:hover {
-  background-color: #45a049;
-}
+/* Отступы между блоками */
+.section { margin-top: 14px; }
 
-/* ---- МОДАЛКА ---- */
-.modal {
-  display: none; /* Скрыта по умолчанию */
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.5);
-  justify-content: center;
-  align-items: center;
+/* На широких экранах можно расширить отступы/шрифты */
+@media (min-width: 768px) {
+  .container { padding: 22px 24px; }
+  button { width: auto; }          /* на десктопе кнопки по контенту */
 }
-
-.modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  width: 400px;
-  font-family: Arial, sans-serif;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-}
-
-.modal-content h2 {
-  margin-bottom: 15px;
-  text-align: center;
-}
-
-.modal-buttons {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.modal-buttons button {
-  flex: 1;
-  padding: 10px;
-  font-size: 14px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-}
-
-.save-btn {
-  background: #4CAF50;
-  color: white;
-}
-
-.save-btn:hover {
-  background: #45a049;
-}
-
-.cancel-btn {
-  background: #ccc;
-  color: black;
-}
-
-.cancel-btn:hover {
-  background: #aaa;
-}
-.form-group {
-  margin-bottom: 15px;
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group label {
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-
