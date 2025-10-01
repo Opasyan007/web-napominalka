@@ -15,8 +15,9 @@
       <h3>Авторизация</h3>
       <input id="email" type="email" placeholder="Email" />
       <input id="password" type="password" placeholder="Пароль" />
-      <button id="btnLogin">Войти</button>
-      <button id="btnLogout">Выйти</button>
+      <!-- ОДИН комплект кнопок, обе с type="button" -->
+      <button id="btnLogin"  type="button">Войти</button>
+      <button id="btnLogout" type="button">Выйти</button>
       <p id="status">Не авторизован</p>
     </div>
 
@@ -31,8 +32,6 @@
         <option value="просроченные">Просроченные</option>
       </select>
     </div>
-    <button id="btnLogin" type="button">Войти</button>
-    <button id="btnLogout" type="button">Выйти</button>
 
     <button onclick="testSound()">Тест звука</button>
 
@@ -86,8 +85,7 @@
   </div>
 
   <!-- Подключения (внизу страницы) -->
-  <script type="module" src="auth.js"></script>
+  <script type="module" src="auth.js?v=3"></script>
   <script src="script.js" defer></script>
 </body>
 </html>
-
