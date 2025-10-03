@@ -77,23 +77,14 @@ button:active { transform: translateY(1px); }
   color: #fff;
 }
 
-.fab {
-  position: fixed;
-  right: 16px;
-  bottom: 16px;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: var(--success);
-  color: #fff;
-  font-size: 28px;
-  border: none;
-  box-shadow: 0 4px 12px rgba(0,0,0,.3);
-  cursor: pointer;
-  transition: background .2s ease, transform .05s ease;
-}
+.fab { position: fixed; 
+      right: 24px; 
+      bottom: 24px; 
+      z-index: 9999; 
+      pointer-events: auto; }
+.modal { display: none; }
+.modal.show { display: flex; }
+
 .fab:hover { background: var(--success-dark); }
 .fab:active { transform: translateY(1px); }
 
@@ -152,3 +143,4 @@ button:active { transform: translateY(1px); }
   .container { padding: 22px 24px; }
   button { width: auto; }
 }
+
