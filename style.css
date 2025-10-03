@@ -3,16 +3,19 @@
 html, body { height: 100%; margin: 0; }
 
 :root {
-  --bg: #118bd3;
-  --card: #ffffff;
+  --bg: #118bd3;          /* фон страницы */
+  --card: #ffffff;        /* цвет карточек/контейнеров */
   --shadow: 0 6px 20px rgba(0,0,0,.12);
-  --primary: #0ea5e9;
-  --success: #22c55e;
+
+  /* Акцентные цвета интерфейса */
+  --primary: #0ea5e9;     /* основной (синий) */
+  --success: #22c55e;     /* зеленый */
   --success-dark: #16a34a;
   --danger: #b32424;
-  --task: #00b734;
-  --text: #111827;
-  --border: #d6d6d6;
+
+  --task: #00b734;        /* фон карточки задачи */
+  --text: #111827;        /* цвет текста */
+  --border: #d6d6d6;      /* границы инпутов */
 }
 
 body {
@@ -78,7 +81,7 @@ button:active { transform: translateY(1px); }
 }
 .overdue { background-color: var(--danger) !important; color: #fff; }
 
-/* ====== ПЛАВАЮЩАЯ КНОПКА "+" (контраст, пульс, подпись) ====== */
+/* ====== ПЛАВАЮЩАЯ КНОПКА (FAB) — градиент, пульс, подсказка ====== */
 .fab {
   position: fixed;
   right: 16px;
@@ -89,9 +92,10 @@ button:active { transform: translateY(1px); }
   height: 64px;
   border-radius: 50%;
 
-  background: #ffffff;
-  color: var(--primary);
-  border: 2px solid var(--primary);
+  /* Градиент вместо белого — ярче и читается на любом фоне */
+  background: linear-gradient(135deg, var(--primary), var(--success));
+  color: #fff;
+  border: none;
 
   display: inline-flex;
   align-items: center;
@@ -102,14 +106,14 @@ button:active { transform: translateY(1px); }
 
   box-shadow:
     0 14px 36px rgba(0,0,0,.35),
-    0 0 0 4px rgba(255,255,255,.85);
+    0 0 0 4px rgba(255,255,255,.25);
   cursor: pointer;
   transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
 
   animation: fabPulse 2.4s ease-out infinite; /* мягкий «пульс» */
 }
 
-/* подпись при наведении (desktop) */
+/* Подсказка слева (desktop) */
 .fab::after {
   content: "Добавить задачу";
   position: absolute;
@@ -139,11 +143,18 @@ button:active { transform: translateY(1px); }
 
 .fab:active { transform: translateY(1px) scale(.98); }
 
-/* пульс */
+/* Пульс */
 @keyframes fabPulse {
-  0%   { box-shadow: 0 14px 36px rgba(0,0,0,.35), 0 0 0 4px rgba(14,165,233,0); }
-  60%  { box-shadow: 0 14px 36px rgba(0,0,0,.35), 0 0 0 16px rgba(14,165,233,.28); }
-  100% { box-shadow: 0 14px 36px rgba(0,0,0,.35), 0 0 0 4px rgba(14,165,233,0); }
+  0%   { box-shadow: 0 14px 36px rgba(0,0,0,.35), 0 0 0 4px rgba(255,255,255,0); }
+  60%  { box-shadow: 0 14px 36px rgba(0,0,0,.35), 0 0 0 14px rgba(255,255,255,.30); }
+  100% { box-shadow: 0 14px 36px rgba(0,0,0,.35), 0 0 0 4px rgba(255,255,255,0); }
+}
+
+/* Подсказка показывается ещё и при фокусе/тапе (подстраховка) */
+.fab:focus::after,
+.fab:active::after {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
 }
 
 /* ====== МОДАЛКА (улучшенная) ====== */
@@ -210,14 +221,7 @@ body.logged-out .fab {
 
 /* ===== FAB: планшет и мобильный тюнинг ===== */
 
-/* Показываем подпись ещё и при фокусе/тапе (подстраховка) */
-.fab:focus::after,
-.fab:active::after {
-  opacity: 1;
-  transform: translateY(-50%) translateX(0);
-}
-
-/* Планшет: больше круг, толще белое кольцо, подпись крупнее */
+/* Планшет (600–1024): крупнее круг, заметнее контур, подсказка чуть больше */
 @media (min-width: 600px) and (max-width: 1024px) {
   .fab {
     right: 24px;
@@ -227,7 +231,7 @@ body.logged-out .fab {
     font-size: 42px;
     box-shadow:
       0 18px 48px rgba(0,0,0,.38),
-      0 0 0 6px rgba(255,255,255,.95);
+      0 0 0 6px rgba(255,255,255,.35);
   }
   .fab::after {
     right: calc(100% + 14px);
@@ -235,7 +239,7 @@ body.logged-out .fab {
   }
 }
 
-/* Телефон: extended FAB — плюс + подпись внутри одной «пилюли» */
+/* Телефон (<600): превращаем FAB в «пилюлю» + надпись внутри */
 @media (max-width: 599.98px) {
   .fab {
     left: 16px;
@@ -245,11 +249,11 @@ body.logged-out .fab {
     height: 56px;
     border-radius: 999px;
     padding: 0 18px;
-    font-size: 28px; /* размер плюса */
+    font-size: 28px; /* плюс */
 
     box-shadow:
       0 12px 28px rgba(0,0,0,.28),
-      0 0 0 3px rgba(255,255,255,.92);
+      0 0 0 3px rgba(255,255,255,.22);
     animation: fabPulse 2.8s ease-out infinite;
   }
 
@@ -261,7 +265,7 @@ body.logged-out .fab {
     opacity: 1;
     transform: none;
     background: transparent;
-    color: var(--primary);
+    color: #fff;              /* белая надпись на градиенте */
     padding: 0;
     box-shadow: none;
     top: auto; right: auto; left: auto;
