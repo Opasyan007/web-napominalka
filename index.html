@@ -55,6 +55,27 @@
         line-height:1 !important;
       }
     }
+    <style id="fab-outline-desktop">
+/* TABLET & DESKTOP: белая окантовка у плюса в круглой FAB */
+@media (min-width: 600px) {
+  /* сам плюс (это текст внутри .fab) */
+  .fab{
+    color:#0a6fde !important;            /* заливка плюса (можно сменить) */
+    -webkit-text-stroke:2px #fff !important; /* белая окантовка для Chrome/Safari */
+    /* фоллбэк для Firefox – имитация обводки тенями */
+    text-shadow:
+      0 1px 0 #fff,  0 -1px 0 #fff,
+      1px 0 0 #fff, -1px  0 0 #fff,
+      1px 1px 0 #fff, -1px -1px 0 #fff,
+      1px -1px 0 #fff, -1px  1px 0 #fff !important;
+  }
+
+  /* подсказку не обводим, чтобы оставалась читабельной */
+  .fab::after{
+    -webkit-text-stroke:0 transparent !important;
+    text-shadow:none !important;
+  }
+}
   </style>
 </head>
 
@@ -139,11 +160,12 @@
   </div>
 
   <!-- Подключения скриптов -->
-  <script type="module" src="auth.js?v=39"></script>
-<script src="script.js?v=39" defer></script>
+  <script type="module" src="auth.js?v=40"></script>
+<script src="script.js?v=40" defer></script>
 
 </body>
 </html>
+
 
 
 
