@@ -1,14 +1,15 @@
 let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
 let reminderSound;
 
-// Helper: включён ли доступ к задачам
-function canUseApp() {
-  return !!window.__authLoggedIn; // флаг выставляет auth.js
+// логин проверяем по классу на body — auth.js его ставит
+function isLoggedIn() {
+  return document.body.classList.contains('logged-in');
 }
 
 // === Добавление задачи ===
 function addTask() {
-  if (!canUseApp()) return;
+  if (!isLoggedIn()) { alert('Сначала войдите.'); return; }
+
   const title = document.getElementById('taskTitle').value;
   const deadline = document.getElementById('taskDeadline').value;
   const assignedTo = document.getElementById('assignedTo').value;
@@ -39,8 +40,6 @@ function addTask() {
 // === Рендер списка ===
 function renderTasks(filter = "все") {
   const list = document.getElementById('taskList');
-  if (!canUseApp()) { list.innerHTML = ''; return; }
-
   list.innerHTML = '';
   const now = new Date();
 
@@ -76,7 +75,6 @@ function renderTasks(filter = "все") {
 
 // === Смена статуса ===
 function changeStatus(id, newStatus) {
-  if (!canUseApp()) return;
   tasks = tasks.map(task => task.id === id ? { ...task, status: newStatus } : task);
   localStorage.setItem('tasks', JSON.stringify(tasks));
   renderTasks();
@@ -84,7 +82,6 @@ function changeStatus(id, newStatus) {
 
 // === Удаление ===
 function deleteTask(id) {
-  if (!canUseApp()) return;
   tasks = tasks.filter(task => task.id !== id);
   localStorage.setItem('tasks', JSON.stringify(tasks));
   renderTasks();
@@ -92,14 +89,13 @@ function deleteTask(id) {
 
 // === Фильтр ===
 function filterTasks() {
-  if (!canUseApp()) return;
   const filter = document.getElementById("statusFilter").value;
   renderTasks(filter);
 }
 
 // === Модалка ===
 function openModal() {
-  if (!canUseApp()) return;
+  if (!isLoggedIn()) { alert('Сначала войдите.'); return; }
   document.getElementById("taskModal").style.display = "flex";
 }
 function closeModal() {
@@ -108,21 +104,26 @@ function closeModal() {
 
 // === Проверка дедлайнов ===
 function checkDeadlines() {
-  if (!canUseApp()) return;
+  if (!isLoggedIn()) return;
   const now = new Date();
   tasks.forEach(task => {
     const deadline = new Date(task.deadline);
     const diffMs = deadline - now;
+
     if (task.status !== "выполнена") {
-      if (diffMs > 0 && diffMs < 300000) { reminderSound.play().catch(()=>{}); }
-      if (diffMs <= 0) { alert(`⏰ Задача "${task.title}" достигла дедлайна!`); }
+      if (diffMs > 0 && diffMs < 300000) {
+        reminderSound.play().catch(()=>{});
+      }
+      if (diffMs <= 0) {
+        alert(`⏰ Задача "${task.title}" достигла дедлайна!`);
+      }
     }
   });
 }
 
 // === Тест звука вручную ===
 function testSound() {
-  if (!canUseApp()) return;
+  if (!isLoggedIn()) { alert('Сначала войдите.'); return; }
   reminderSound.play().catch(err => console.log("Ошибка воспроизведения:", err));
 }
 
@@ -131,21 +132,14 @@ document.addEventListener("DOMContentLoaded", () => {
   reminderSound = new Audio("sound/mixkit-wrong-answer-fail-notification-946.mp3");
   reminderSound.volume = 1.0;
 
-  // начально: считаем, что пользователь не авторизован (пока auth.js не сообщит)
-  window.__authLoggedIn = !!window.__authLoggedIn;
-  document.body.classList.toggle('logged-out', !window.__authLoggedIn);
-  document.body.classList.toggle('logged-in',  !!window.__authLoggedIn);
-
+  // классы logged-in / logged-out управляются auth.js
   renderTasks();
   checkDeadlines();
 });
 
-// === реагируем на изменения авторизации (сигнал из auth.js) ===
-window.addEventListener('auth-changed', (e) => {
-  const loggedIn = !!(e.detail && e.detail.loggedIn);
-  document.body.classList.toggle('logged-out', !loggedIn);
-  document.body.classList.toggle('logged-in',  loggedIn);
-  renderTasks(); // обновим видимость списка
+// === Реакция на смену авторизации (событие шлёт auth.js) ===
+window.addEventListener('auth-changed', () => {
+  renderTasks();
 });
 
 // === Таймер обновления (каждые 30 сек) ===
