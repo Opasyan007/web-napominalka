@@ -151,44 +151,34 @@ setInterval(() => {
   renderTasks();
   checkDeadlines();
 }, 30000);
-// --- модалка ---
-function openModal()  { 
+// ====== МОДАЛКА (надёжно) ======
+function openModal() {
   if (!requireAuth()) return;
   const m = document.getElementById('taskModal');
-  if (m){ m.classList.add('show'); m.style.display = 'flex'; }
+  if (m) { m.classList.add('show'); m.style.display = 'flex'; }
 }
-function closeModal() { 
+function closeModal() {
   const m = document.getElementById('taskModal');
-  if (m){ m.classList.remove('show'); m.style.display = 'none'; }
+  if (m) { m.classList.remove('show'); m.style.display = 'none'; }
 }
 
-// навешиваем обработчик на кнопку “+”
+// Привязываем клики через JS (чтобы не зависеть от inline-обработчиков)
 document.addEventListener('DOMContentLoaded', () => {
-  const fab = document.getElementById('fabAdd');
-  fab?.addEventListener('click', openModal);
+  document.getElementById('fabAdd')?.addEventListener('click', openModal);
+
+  // Сохранить/Отмена в модалке — два варианта (работают оба):
+  document.getElementById('btnSave')?.addEventListener('click', () => { 
+    addTask(); 
+    closeModal(); 
+  });
+  document.getElementById('btnCancel')?.addEventListener('click', closeModal);
 });
 
-// Экспортируем для кнопок “Сохранить/Отмена” в разметке (если они inline)
-window.openModal  = openModal;
-window.closeModal = closeModal;
-// если этих функций нет в файле — добавь
-function openModal()  { 
-  if (!requireAuth()) return;
-  const m = document.getElementById('taskModal');
-  if (m){ m.style.display = 'flex'; }
-}
-function closeModal() { 
-  const m = document.getElementById('taskModal');
-  if (m){ m.style.display = 'none'; }
-}
-
-// Экспортируем в window для inline-обработчиков в HTML
-window.openModal   = openModal;
-window.closeModal  = closeModal;
-window.addTask     = addTask;
-window.deleteTask  = deleteTask;
-window.changeStatus= changeStatus;
-window.filterTasks = filterTasks;
-window.testSound   = testSound;
-
-
+// ====== СДЕЛАТЬ ФУНКЦИИ ВИДИМЫМИ ДЛЯ HTML (если где-то остались onclick="...") ======
+window.openModal    = openModal;
+window.closeModal   = closeModal;
+window.addTask      = addTask;
+window.deleteTask   = deleteTask;
+window.changeStatus = changeStatus;
+window.filterTasks  = filterTasks;
+window.testSound    = testSound;
