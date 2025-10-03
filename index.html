@@ -1,53 +1,32 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Менеджер задач - 50 Паскаль</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <div class="container">
-    <h1>Менеджер задач_Веб-напоминалка "50 Паскаль"</h1>
+<!-- Блок авторизации оставляем как есть -->
+<div id="authSection" class="card">
+  <!-- ... твои поля email/password, кнопки Войти/Выйти и <p id="status"> ... -->
+</div>
 
-    <!-- 🔐 Блок авторизации -->
-    <div id="authSection" class="card">
-      <h3>Авторизация</h3>
-      <input id="email" type="email" placeholder="Email" autocomplete="username" />
-      <input id="password" type="password" placeholder="Пароль" autocomplete="current-password" />
-      <button id="btnLogin" type="button">Войти</button>
-      <button id="btnLogout" type="button">Выйти</button>
-      <p id="status">Не авторизован</p>
-    </div>
-
-    <!-- Фильтр задач -->
-    <div class="form-group">
-      <label for="statusFilter">Фильтр по статусу:</label>
-      <select id="statusFilter" onchange="filterTasks()">
-        <option value="все">Все</option>
-        <option value="новая">Новая</option>
-        <option value="в работе">В работе</option>
-        <option value="выполнена">Выполнена</option>
-        <option value="активные">Активные</option>
-        <option value="просроченные">Просроченные</option>
-      </select>
-    </div>
-
-    <button onclick="testSound()">Тест звука</button>
-
-    <!-- Список задач -->
-    <div id="taskList"></div>
+<!-- ⬇️ ВЕСЬ НИЖЕ ИДУЩИЙ КОНТЕНТ ПРО ЗАДАЧИ ОБЕРНИ В ЭТОТ БЛОК -->
+<div id="appSection" class="card" hidden>
+  <!-- Фильтр задач -->
+  <div class="form-group">
+    <label for="statusFilter">Фильтр по статусу:</label>
+    <select id="statusFilter" onchange="filterTasks()">
+      <option value="все">Все</option>
+      <option value="новая">Новая</option>
+      <option value="в работе">В работе</option>
+      <option value="выполнена">Выполнена</option>
+      <option value="активные">Активные</option>
+      <option value="просроченные">Просроченные</option>
+    </select>
   </div>
 
+  <button onclick="testSound()">Тест звука</button>
+
+  <!-- Список задач -->
+  <div id="taskList"></div>
+
   <!-- Плавающая кнопка -->
-<!-- было -->
-<!-- <button class="fab" onclick="openModal()">+</button> -->
+  <button id="fabAdd" class="fab" type="button" onclick="openModal()">+</button>
 
-<!-- стало -->
-<button id="fabAdd" class="fab" type="button">+</button>
-
-
-  <!-- Модалка для новой задачи -->
+  <!-- Модалка новой задачи -->
   <div id="taskModal" class="modal">
     <div class="modal-content">
       <h2>Новая задача</h2>
@@ -66,21 +45,7 @@
         <label for="assignedTo">Ответственный:</label>
         <select id="assignedTo">
           <option>Не выбрано</option>
-          <option>Ахметзянов Р.И.</option>
-          <option>Кузьмина Е.П.</option>
-          <option>Галимов А.И.</option>
-          <option>Смирнов П.С.</option>
-          <option>Шарипова Л.Н.</option>
-          <option>Иванов А В.</option>
-          <option>Зайнуллин И.М.</option>
-          <option>Васильева Н.В.</option>
-          <option>Миннахметова А.И.</option>
-          <option>Сафин Б.Р.</option>
-          <option>Николаева Д.А.</option>
-          <option>Егоров Н.Д.</option>
-          <option>Мухаметзянова Д. Р.</option>
-          <option>Попов М.И.</option>
-          <option>Хасанова Г.К.</option>
+          <!-- твои варианты -->
         </select>
       </div>
 
@@ -90,18 +55,4 @@
       </div>
     </div>
   </div>
-
-  <!-- Подключения скриптов -->
-<script type="module" src="auth.js?v=6"></script>
-<script type="module" src="script.js?v=2"></script>
-
-
-
-</body>
-</html>
-
-
-
-
-
-
+</div>
