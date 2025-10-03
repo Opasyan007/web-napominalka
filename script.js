@@ -151,4 +151,24 @@ setInterval(() => {
   renderTasks();
   checkDeadlines();
 }, 30000);
+// --- модалка ---
+function openModal()  { 
+  if (!requireAuth()) return;
+  const m = document.getElementById('taskModal');
+  if (m){ m.classList.add('show'); m.style.display = 'flex'; }
+}
+function closeModal() { 
+  const m = document.getElementById('taskModal');
+  if (m){ m.classList.remove('show'); m.style.display = 'none'; }
+}
+
+// навешиваем обработчик на кнопку “+”
+document.addEventListener('DOMContentLoaded', () => {
+  const fab = document.getElementById('fabAdd');
+  fab?.addEventListener('click', openModal);
+});
+
+// Экспортируем для кнопок “Сохранить/Отмена” в разметке (если они inline)
+window.openModal  = openModal;
+window.closeModal = closeModal;
 
