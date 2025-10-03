@@ -113,7 +113,7 @@ button:active { transform: translateY(1px); }
 .fab::after {
   content: "Добавить задачу";
   position: absolute;
-  right: calc(100% + 12px);
+  right: calc(100% + 16px);
   top: 50%;
   transform: translateY(-50%) translateX(8px);
   background: rgba(17,24,39,.96);
@@ -226,3 +226,4 @@ body.logged-out #btnTestSound,
 body.logged-out .fab {
   display: none !important;
 }
+
