@@ -96,7 +96,7 @@ button:active { transform: translateY(1px); }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 36px;
+  font-size: 36px;      /* знак "+" */
   font-weight: 900;
   line-height: 0;
 
@@ -109,11 +109,11 @@ button:active { transform: translateY(1px); }
   animation: fabPulse 2.4s ease-out infinite; /* мягкий «пульс» */
 }
 
-/* подпись при наведении */
+/* подпись при наведении (desktop) */
 .fab::after {
   content: "Добавить задачу";
   position: absolute;
-  right: calc(100% + 16px);
+  right: calc(100% + 12px);
   top: 50%;
   transform: translateY(-50%) translateX(8px);
   background: rgba(17,24,39,.96);
@@ -129,12 +129,12 @@ button:active { transform: translateY(1px); }
 }
 
 .fab:hover {
-  transform: translateY(-1px) scale(1.12); /* становится больше */
+  transform: translateY(-1px) scale(1.12);
   filter: saturate(1.05);
 }
 .fab:hover::after {
   opacity: 1;
-  transform: translateY(-50%) translateX(0); /* подпись «выезжает» */
+  transform: translateY(-50%) translateX(0);
 }
 
 .fab:active { transform: translateY(1px) scale(.98); }
@@ -146,29 +146,14 @@ button:active { transform: translateY(1px); }
   100% { box-shadow: 0 14px 36px rgba(0,0,0,.35), 0 0 0 4px rgba(14,165,233,0); }
 }
 
-@media (max-width: 600px) {
-  .fab {
-    right: 20px;
-    bottom: 20px;
-    width: 72px;
-    height: 72px;
-    font-size: 40px;
-  }
-}
-
-/* уважение к reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  .fab { animation: none !important; }
-}
-
 /* ====== МОДАЛКА (улучшенная) ====== */
 .modal {
   display: none;
   position: fixed;
   inset: 0;
-  z-index: 10000;                 /* поверх всего */
-  background: rgba(0,0,0,.55);    /* темнее фон */
-  backdrop-filter: blur(2px);     /* лёгкий блюр задника */
+  z-index: 10000;
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(2px);
   justify-content: center;
   align-items: center;
   padding: 16px;
@@ -176,16 +161,14 @@ button:active { transform: translateY(1px); }
 .modal.show { display: flex; }
 
 .modal-content {
-  width: min(92vw, 560px);        /* шире — заметнее */
+  width: min(92vw, 560px);
   background: #fff;
   padding: 22px 20px;
   border-radius: 16px;
-  border: 1px solid rgba(14,165,233,.25); /* акцентная рамка */
+  border: 1px solid rgba(14,165,233,.25);
   box-shadow: 0 20px 60px rgba(0,0,0,.35);
   position: relative;
 }
-
-/* цветная «планка» сверху карточки */
 .modal-content::before {
   content: "";
   position: absolute;
@@ -194,7 +177,6 @@ button:active { transform: translateY(1px); }
   border-radius: 999px;
   background: linear-gradient(90deg, var(--primary), var(--success));
 }
-
 .modal-content h2 {
   margin: 12px 0 14px;
   text-align: center;
@@ -205,7 +187,6 @@ button:active { transform: translateY(1px); }
 
 .modal-buttons { display: flex; gap: 10px; margin-top: 12px; }
 .modal-buttons button { flex: 1; }
-
 .save-btn { background: var(--success); }
 .save-btn:hover { background: var(--success-dark); }
 .cancel-btn { background: #e5e7eb; color: #111; }
@@ -227,21 +208,73 @@ body.logged-out .fab {
   display: none !important;
 }
 
-/* Показываем подпись при фокусе/тапе (на всякий случай) */
+/* ===== FAB: планшет и мобильный тюнинг ===== */
+
+/* Показываем подпись ещё и при фокусе/тапе (подстраховка) */
 .fab:focus::after,
 .fab:active::after {
   opacity: 1;
   transform: translateY(-50%) translateX(0);
 }
 
-/* Тач-устройства: подпись ВСЕГДА видна и снизу по центру */
-@media (hover: none), (pointer: coarse) {
+/* Планшет: больше круг, толще белое кольцо, подпись крупнее */
+@media (min-width: 600px) and (max-width: 1024px) {
+  .fab {
+    right: 24px;
+    bottom: 24px;
+    width: 78px;
+    height: 78px;
+    font-size: 42px;
+    box-shadow:
+      0 18px 48px rgba(0,0,0,.38),
+      0 0 0 6px rgba(255,255,255,.95);
+  }
   .fab::after {
-    left: 50%;
-    right: auto;
-    top: calc(100% + 10px);   /* ниже кнопки */
-    transform: translateX(-50%);
-    opacity: 1;
+    right: calc(100% + 14px);
+    font-size: 15px;
   }
 }
 
+/* Телефон: extended FAB — плюс + подпись внутри одной «пилюли» */
+@media (max-width: 599.98px) {
+  .fab {
+    left: 16px;
+    right: 16px;
+    bottom: calc(18px + env(safe-area-inset-bottom));
+    width: auto;
+    height: 56px;
+    border-radius: 999px;
+    padding: 0 18px;
+    font-size: 28px; /* размер плюса */
+
+    box-shadow:
+      0 12px 28px rgba(0,0,0,.28),
+      0 0 0 3px rgba(255,255,255,.92);
+    animation: fabPulse 2.8s ease-out infinite;
+  }
+
+  /* делаем подпись частью кнопки */
+  .fab::after {
+    position: static;
+    display: inline-block;
+    margin-left: 10px;
+    opacity: 1;
+    transform: none;
+    background: transparent;
+    color: var(--primary);
+    padding: 0;
+    box-shadow: none;
+    top: auto; right: auto; left: auto;
+    content: "Добавить задачу";
+    font-size: 16px;
+    line-height: 1;
+  }
+
+  .fab:hover { transform: translateY(-1px) scale(1.06); }
+  .fab:hover::after { transform: none; opacity: 1; }
+}
+
+/* Уважение к reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .fab { animation: none !important; }
+}
