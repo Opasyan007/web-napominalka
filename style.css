@@ -7,15 +7,15 @@ html, body { height: 100%; margin: 0; }
   --card: #ffffff;        /* цвет карточек/контейнеров */
   --shadow: 0 6px 20px rgba(0,0,0,.12);
 
-  /* Акцентные цвета интерфейса */
+  /* Акценты UI */
   --primary: #0ea5e9;     /* основной (синий) */
   --success: #22c55e;     /* зеленый */
   --success-dark: #16a34a;
   --danger: #b32424;
 
   --task: #00b734;        /* фон карточки задачи */
-  --text: #111827;        /* цвет текста */
-  --border: #ffffff;      /* границы инпутов */
+  --text: #111827;        /* текст */
+  --border: #d6d6d6;      /* границы инпутов */
 }
 
 body {
@@ -81,7 +81,7 @@ button:active { transform: translateY(1px); }
 }
 .overdue { background-color: var(--danger) !important; color: #fff; }
 
-/* ====== ПЛАВАЮЩАЯ КНОПКА (FAB) — градиент, пульс, подсказка ====== */
+/* ====== FAB (Floating Action Button) — градиент, пульс, подсказка ====== */
 .fab {
   position: fixed;
   right: 16px;
@@ -92,7 +92,6 @@ button:active { transform: translateY(1px); }
   height: 64px;
   border-radius: 50%;
 
-  /* Градиент вместо белого — ярче и читается на любом фоне */
   background: linear-gradient(135deg, var(--primary), var(--success));
   color: #fff;
   border: none;
@@ -239,7 +238,7 @@ body.logged-out .fab {
   }
 }
 
-/* Телефон (<600): превращаем FAB в «пилюлю» + надпись внутри */
+/* Телефон (<600): превращаем FAB в «пилюлю» + белая окантовка овала и плюса */
 @media (max-width: 599.98px) {
   .fab {
     left: 16px;
@@ -249,59 +248,57 @@ body.logged-out .fab {
     height: 56px;
     border-radius: 999px;
     padding: 0 18px;
-    font-size: 28px; /* плюс */
 
+    /* белая рамка и внешнее «кольцо» */
+    border: 2px solid #fff !important;
     box-shadow:
       0 12px 28px rgba(0,0,0,.28),
-      0 0 0 3px rgba(255,255,255,.22);
+      0 0 0 6px rgba(255,255,255,.45) !important;
+
+    /* скрываем исходный текст "+", рисуем его отдельно в ::before */
+    font-size: 0;
     animation: fabPulse 2.8s ease-out infinite;
   }
 
-  /* делаем подпись частью кнопки */
+  /* ПЛЮС с белой окантовкой */
+  .fab::before {
+    content: "+";
+    font-size: 28px;          /* размер плюса */
+    line-height: 1;
+    display: inline-block;
+    margin-right: 10px;
+
+    color: #0a6fde;           /* заливка плюса (можешь поменять) */
+    -webkit-text-stroke: 2px #fff; /* белая окантовка (Chrome/Safari) */
+    /* Фоллбэк для Firefox — имитация обводки */
+    text-shadow:
+      0 1px 0 #fff,  0 -1px 0 #fff,
+      1px 0 0 #fff, -1px  0 0 #fff,
+      1px 1px 0 #fff, -1px -1px 0 #fff,
+      1px -1px 0 #fff, -1px  1px 0 #fff;
+  }
+
+  /* Подпись — белая внутри пилюли */
   .fab::after {
     position: static;
     display: inline-block;
-    margin-left: 10px;
+    margin-left: 0;
     opacity: 1;
     transform: none;
     background: transparent;
-    color: #fff;              /* белая надпись на градиенте */
+    color: #fff;
     padding: 0;
     box-shadow: none;
-    top: auto; right: auto; left: auto;
     content: "Добавить задачу";
     font-size: 16px;
     line-height: 1;
   }
 
   .fab:hover { transform: translateY(-1px) scale(1.06); }
-  .fab:hover::after { transform: none; opacity: 1; }
+  .fab:hover::after { opacity: 1; transform: none; }
 }
 
 /* Уважение к reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .fab { animation: none !important; }
 }
-/* === Mobile FAB: белая окантовка у плюса (подпись без окантовки) === */
-@media (max-width: 599.98px) {
-  /* сам плюс — с белым контуром */
-  .fab {
-    color: #0a6fde;                         /* заливка плюса (синий) */
-    -webkit-text-stroke: 2px #fff;          /* белая окантовка (Chrome/Safari) */
-    /* Фоллбэк для Firefox: имитация обводки через тени */
-    text-shadow:
-      0 1px 0 #fff, 0 -1px 0 #fff,
-      1px 0 0 #fff, -1px 0 0 #fff,
-      1px 1px 0 #fff, -1px -1px 0 #fff,
-      1px -1px 0 #fff, -1px 1px 0 #fff;
-  }
-
-  /* подпись оставляем чистой (без окантовки) */
-  .fab::after {
-    -webkit-text-stroke: 0 transparent !important;
-    text-shadow: none !important;
-    color: #fff !important;
-  }
-}
-
-
