@@ -227,3 +227,21 @@ body.logged-out .fab {
   display: none !important;
 }
 
+/* Показываем подпись при фокусе/тапе (на всякий случай) */
+.fab:focus::after,
+.fab:active::after {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* Тач-устройства: подпись ВСЕГДА видна и снизу по центру */
+@media (hover: none), (pointer: coarse) {
+  .fab::after {
+    left: 50%;
+    right: auto;
+    top: calc(100% + 10px);   /* ниже кнопки */
+    transform: translateX(-50%);
+    opacity: 1;
+  }
+}
+
