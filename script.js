@@ -6,7 +6,7 @@ import {
   onAuthStateChanged,
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
-const auth = getAuth(); // берём auth, созданный в auth.js
+const auth = getAuth();
 
 // ---------- сохраняем сессию между перезагрузками ----------
 (async () => {
@@ -19,9 +19,10 @@ const auth = getAuth(); // берём auth, созданный в auth.js
 })();
 
 // ---------- элементы интерфейса ----------
-const authSection   = document.getElementById("authSection");
-const statusFilterEl= document.getElementById("statusFilter");
-const taskListEl    = document.getElementById("taskList");
+const authSection     = document.getElementById("authSection");
+const statusFilterEl  = document.getElementById("statusFilter");
+const taskListEl      = document.getElementById("taskList");
+const fabBtn          = document.getElementById("fabAdd") || document.querySelector(".fab");
 
 // ---------- локальное хранение задач (по пользователю) ----------
 let tasks = [];
@@ -32,14 +33,14 @@ function storageKey() {
   const uid = auth.currentUser?.uid || "guest";
   return `tasks_${uid}`;
 }
-function loadTasks()   { tasks = JSON.parse(localStorage.getItem(storageKey())) || []; }
-function saveTasks()   { localStorage.setItem(storageKey(), JSON.stringify(tasks)); }
+function loadTasks() { tasks = JSON.parse(localStorage.getItem(storageKey())) || []; }
+function saveTasks() { localStorage.setItem(storageKey(), JSON.stringify(tasks)); }
 function requireAuth() {
   if (!auth.currentUser) { alert("Сначала войдите в систему"); return false; }
   return true;
 }
 
-// ---------- ЛОГИКА ЗАДАЧ ----------
+// ---------- логика задач ----------
 function addTask() {
   if (!requireAuth()) return;
 
@@ -47,9 +48,9 @@ function addTask() {
   const deadlineEl   = document.getElementById('taskDeadline');
   const assignedToEl = document.getElementById('assignedTo');
 
-  const title = titleEl.value.trim();
-  const deadline = deadlineEl.value;
-  const assignedTo = assignedToEl.value.trim();
+  const title      = (titleEl?.value || "").trim();
+  const deadline   = (deadlineEl?.value || "");
+  const assignedTo = (assignedToEl?.value || "").trim();
 
   if (!title || !deadline || !assignedTo || assignedTo === 'Не выбрано') {
     alert('Заполните все поля');
@@ -69,12 +70,13 @@ function addTask() {
   saveTasks();
   renderTasks();
 
-  titleEl.value = '';
-  deadlineEl.value = '';
+  if (titleEl) titleEl.value = '';
+  if (deadlineEl) deadlineEl.value = '';
 }
 
 function renderTasks(filter = 'все') {
   const now = new Date();
+  if (!taskListEl) return;
   taskListEl.innerHTML = '';
 
   tasks
@@ -125,15 +127,16 @@ function filterTasks() {
   renderTasks(statusFilterEl.value);
 }
 
-// ---------- МОДАЛКА (объявляем ОДИН раз) ----------
+// ---------- модалка (одна версия!) ----------
 function openModal() {
   if (!requireAuth()) return;
   const m = document.getElementById('taskModal');
-  if (m) { m.style.display = 'flex'; }
+  if (!m) { console.error('#taskModal не найден'); return; }
+  m.style.display = 'flex';
 }
 function closeModal() {
   const m = document.getElementById('taskModal');
-  if (m) { m.style.display = 'none'; }
+  if (m) m.style.display = 'none';
 }
 
 // ---------- дедлайны + звук ----------
@@ -151,9 +154,7 @@ function checkDeadlines() {
     }
   });
 }
-function testSound() {
-  reminderSound?.play().catch(() => {});
-}
+function testSound() { reminderSound?.play().catch(() => {}); }
 
 // ---------- DOM готов ----------
 document.addEventListener('DOMContentLoaded', () => {
@@ -166,13 +167,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }).catch(() => {});
   }, { once: true });
 
+  // обработчики на кнопку “+” и кнопки модалки
+  fabBtn?.addEventListener('click', openModal);
+  document.getElementById('btnSave')?.addEventListener('click', () => { addTask(); closeModal(); });
+  document.getElementById('btnCancel')?.addEventListener('click', closeModal);
+
   // первый рендер (пусто, если не залогинен)
   renderTasks();
 });
 
 // ---------- реакция на вход/выход ----------
 onAuthStateChanged(auth, (user) => {
-  if (authSection) authSection.style.display = user ? "none" : "block";
+  // прячем/показываем блок авторизации + кнопку “+”
+  if (authSection) authSection.style.display = user ? "block" : "block"; // если хочешь спрятать форму после входа — поставь "none" вместо "block"
+  if (fabBtn) fabBtn.style.display = user ? "inline-flex" : "none";
 
   if (user) {
     loadTasks();
@@ -185,11 +193,11 @@ onAuthStateChanged(auth, (user) => {
     }, 30000);
   } else {
     if (deadlinesTimer) clearInterval(deadlinesTimer);
-    taskListEl.innerHTML = "";
+    if (taskListEl) taskListEl.innerHTML = "";
   }
 });
 
-// ---------- ДЕЛАЕМ ФУНКЦИИ ДОСТУПНЫМИ ДЛЯ HTML (onclick/онchange) ----------
+// ---------- делаем функции доступными для onclick в HTML ----------
 window.openModal    = openModal;
 window.closeModal   = closeModal;
 window.addTask      = addTask;
