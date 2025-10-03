@@ -1,3 +1,4 @@
+/* ====== БАЗА ====== */
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }
 
@@ -14,7 +15,6 @@ html, body { height: 100%; margin: 0; }
   --border: #d6d6d6;
 }
 
-/* базовая обвязка */
 body {
   min-height: 100dvh;
   background: var(--bg);
@@ -38,6 +38,7 @@ h1 {
   margin: 0 0 12px;
 }
 
+/* ====== ФОРМЫ / КНОПКИ ====== */
 .form-group { margin-bottom: 14px; display: flex; flex-direction: column; }
 .form-group label { margin-bottom: 6px; font-weight: 600; }
 
@@ -66,7 +67,7 @@ button {
 }
 button:active { transform: translateY(1px); }
 
-/* карточки задач */
+/* ====== КАРТОЧКИ ЗАДАЧ ====== */
 .task-card {
   background-color: var(--task);
   margin-top: 10px;
@@ -77,54 +78,85 @@ button:active { transform: translateY(1px); }
 }
 .overdue { background-color: var(--danger) !important; color: #fff; }
 
-/* плавающая кнопка */
+/* ====== ПЛАВАЮЩАЯ КНОПКА "+" (обновлено) ====== */
 .fab {
   position: fixed;
-  right: 24px;
-  bottom: 24px;
+  right: 16px;
+  bottom: 16px;
   z-index: 9999;
-  pointer-events: auto;
+
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+
+  background: #ffffff;              /* контраст с зелёной карточкой */
+  color: var(--primary);
+  border: 2px solid var(--primary);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  font-weight: 900;
+  line-height: 0;
+
+  box-shadow:
+    0 14px 36px rgba(0,0,0,.35),
+    0 0 0 4px rgba(255,255,255,.85); /* белое кольцо вокруг */
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease;
+
+  animation: fabPulse 2.4s ease-out infinite; /* лёгкий пульс */
 }
-.fab:hover { background: var(--success-dark); }
-.fab:active { transform: translateY(1px); }
+.fab:hover { transform: translateY(-1px) scale(1.04); }
+.fab:active { transform: translateY(1px) scale(.98); }
+
+@keyframes fabPulse {
+  0%   { box-shadow: 0 14px 36px rgba(0,0,0,.35), 0 0 0 4px rgba(14,165,233,0); }
+  60%  { box-shadow: 0 14px 36px rgba(0,0,0,.35), 0 0 0 12px rgba(14,165,233,.25); }
+  100% { box-shadow: 0 14px 36px rgba(0,0,0,.35), 0 0 0 4px rgba(14,165,233,0); }
+}
 
 @media (max-width: 600px) {
   .fab {
-    width: 120px; height: 120px; font-size: 45px;
-    bottom: 32px; right: 32px;
+    right: 20px;
+    bottom: 20px;
+    width: 72px;
+    height: 72px;
+    font-size: 40px;
   }
 }
 
-/* ===== MODAL (улучшенная) ===== */
+/* ====== МОДАЛКА (обновлено) ====== */
 .modal {
   display: none;
   position: fixed;
   inset: 0;
   z-index: 10000;                 /* поверх всего */
   background: rgba(0,0,0,.55);    /* темнее фон */
-  backdrop-filter: blur(3px);     /* лёгкий блюр */
+  backdrop-filter: blur(2px);     /* лёгкий блюр задника */
   justify-content: center;
   align-items: center;
-  padding: 24px;
+  padding: 16px;
 }
 .modal.show { display: flex; }
 
 .modal-content {
-  width: min(92vw, 560px);        /* чуть шире, заметнее */
+  width: min(92vw, 560px);        /* шире — заметнее */
   background: #fff;
   padding: 22px 20px;
   border-radius: 16px;
   border: 1px solid rgba(14,165,233,.25); /* акцентная рамка */
-  box-shadow: 0 20px 60px rgba(0,0,0,.35); /* жирная тень */
+  box-shadow: 0 20px 60px rgba(0,0,0,.35);
   position: relative;
 }
 
-/* цветная «планка» сверху */
+/* цветная «планка» сверху карточки */
 .modal-content::before {
   content: "";
   position: absolute;
   left: 16px; right: 16px; top: 10px;
-  height: 18px;
+  height: 6px;
   border-radius: 999px;
   background: linear-gradient(90deg, var(--primary), var(--success));
 }
@@ -145,6 +177,7 @@ button:active { transform: translateY(1px); }
 .cancel-btn { background: #e5e7eb; color: #111; }
 .cancel-btn:hover { background: #d1d5db; }
 
+/* ====== ПРОЧЕЕ ====== */
 .section { margin-top: 14px; }
 
 @media (min-width: 768px) {
@@ -152,14 +185,10 @@ button:active { transform: translateY(1px); }
   button { width: auto; }
 }
 
-/* 🔒 Прячем рабочие элементы для гостей */
+/* 🔒 Скрываем рабочие элементы для гостей */
 body.logged-out #taskList,
 body.logged-out #filterGroup,
 body.logged-out #btnTestSound,
 body.logged-out .fab {
   display: none !important;
 }
-
-
-
-
