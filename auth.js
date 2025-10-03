@@ -30,16 +30,19 @@ const statusEl    = document.getElementById("status");
 const btnLogin    = document.getElementById("btnLogin");
 const btnLogout   = document.getElementById("btnLogout");
 
+// показать/спрятать поля входа (секцию не трогаем)
 function toggleAuthUI(loggedIn) {
   if (authSection) authSection.style.display = "block";
   if (emailEl)   emailEl.style.display   = loggedIn ? "none" : "";
   if (passEl)    passEl.style.display    = loggedIn ? "none" : "";
   if (btnLogin)  btnLogin.style.display  = loggedIn ? "none" : "";
-  if (btnLogout) btnLogout.style.display = "";
+  if (btnLogout) btnLogout.style.display = ""; // всегда видно
 }
 
-try { await setPersistence(auth, browserLocalPersistence); } catch(e){ console.error(e); }
+// сохраняем сессию между перезагрузками
+try { await setPersistence(auth, browserLocalPersistence); } catch (e) { console.error(e); }
 
+// логин/логаут
 btnLogin?.addEventListener("click", async (e) => {
   e.preventDefault();
   try {
@@ -51,32 +54,25 @@ btnLogin?.addEventListener("click", async (e) => {
 
 btnLogout?.addEventListener("click", async (e) => {
   e.preventDefault();
-  try {
-    await signOut(auth);
-  } catch (err) {
-    alert(`Ошибка выхода: ${err.code}`);
-  }
+  try { await signOut(auth); }
+  catch (err) { alert(`Ошибка выхода: ${err.code}`); }
 });
 
-// --- Состояние авторизации + нотификация в app (script.js) ---
+// --- Состояние авторизации + уведомление для script.js ---
 onAuthStateChanged(auth, (user) => {
   const loggedIn = !!user;
+
+  // статусный текст
   if (statusEl) statusEl.textContent = loggedIn ? `Авторизован: ${user.email}` : "Не авторизован";
+
+  // поля входа
   toggleAuthUI(loggedIn);
-  onAuthStateChanged(auth, (user) => {
-  const loggedIn = !!user;
 
-  // ... твой код ...
+  // классы на <body> (используются CSS и script.js)
+  document.body.classList.toggle('logged-in',  loggedIn);
+  document.body.classList.toggle('logged-out', !loggedIn);
 
-  // ✅ Глобальный флаг + событие для других скриптов
-  window.__loggedIn = loggedIn;                                        // ← ДОБАВИЛИ
-  window.dispatchEvent(new CustomEvent('auth-changed', {               // ← ДОБАВИЛИ
-    detail: { loggedIn }
-  }));
-});
-
-
-  // делимся состоянием с остальным кодом
-  window.__LOGGED_IN__ = loggedIn;
-  window.dispatchEvent(new CustomEvent("auth-change", { detail: { loggedIn } }));
+  // глобальный флаг + событие, чтобы script.js точно знал состояние
+  window.__loggedIn = loggedIn;
+  window.dispatchEvent(new CustomEvent('auth-changed', { detail: { loggedIn } }));
 });
