@@ -13,14 +13,14 @@
     <!-- 🔐 Блок авторизации -->
     <div id="authSection" class="card">
       <h3>Авторизация</h3>
-      <input id="email" type="email" placeholder="Email" />
-      <input id="password" type="password" placeholder="Пароль" />
-      <!-- ОДИН комплект кнопок, обе с type="button" -->
-      <button id="btnLogin"  type="button">Войти</button>
+      <input id="email" type="email" placeholder="Email" autocomplete="username" />
+      <input id="password" type="password" placeholder="Пароль" autocomplete="current-password" />
+      <button id="btnLogin" type="button">Войти</button>
       <button id="btnLogout" type="button">Выйти</button>
       <p id="status">Не авторизован</p>
     </div>
 
+    <!-- Фильтр задач -->
     <div class="form-group">
       <label for="statusFilter">Фильтр по статусу:</label>
       <select id="statusFilter" onchange="filterTasks()">
@@ -35,12 +35,14 @@
 
     <button onclick="testSound()">Тест звука</button>
 
+    <!-- Список задач -->
     <div id="taskList"></div>
   </div>
 
   <!-- Плавающая кнопка -->
   <button class="fab" onclick="openModal()">+</button>
 
+  <!-- Модалка для новой задачи -->
   <div id="taskModal" class="modal">
     <div class="modal-content">
       <h2>Новая задача</h2>
@@ -84,8 +86,8 @@
     </div>
   </div>
 
-  <!-- Подключения (внизу страницы) -->
-  <script type="module" src="auth.js?v=3"></script>
+  <!-- Подключения скриптов -->
+  <script type="module" src="auth.js?v=5"></script>
   <script src="script.js" defer></script>
 </body>
 </html>
