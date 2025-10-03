@@ -282,3 +282,25 @@ body.logged-out .fab {
 @media (prefers-reduced-motion: reduce) {
   .fab { animation: none !important; }
 }
+/* === Mobile FAB: белая окантовка у плюса (подпись без окантовки) === */
+@media (max-width: 599.98px) {
+  /* сам плюс — с белым контуром */
+  .fab {
+    color: #0a6fde;                         /* заливка плюса (синий) */
+    -webkit-text-stroke: 2px #fff;          /* белая окантовка (Chrome/Safari) */
+    /* Фоллбэк для Firefox: имитация обводки через тени */
+    text-shadow:
+      0 1px 0 #fff, 0 -1px 0 #fff,
+      1px 0 0 #fff, -1px 0 0 #fff,
+      1px 1px 0 #fff, -1px -1px 0 #fff,
+      1px -1px 0 #fff, -1px 1px 0 #fff;
+  }
+
+  /* подпись оставляем чистой (без окантовки) */
+  .fab::after {
+    -webkit-text-stroke: 0 transparent !important;
+    text-shadow: none !important;
+    color: #fff !important;
+  }
+}
+
