@@ -1,21 +1,57 @@
-// Храним задачи в localStorage
-let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+// script.js — задачи + UI, без повторной инициализации Firebase
+import {
+  getAuth,
+  setPersistence,
+  browserLocalPersistence,
+  onAuthStateChanged,
+} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
-// Звук напоминания (инициализируем после первого клика из-за ограничений браузера)
-let reminderSound;
+const auth = getAuth(); // берём auth, созданный в auth.js
 
-// Короткая утилита для сохранения списка
-function save() {
-  localStorage.setItem('tasks', JSON.stringify(tasks));
+// ---------- сохраняем сессию между перезагрузками ----------
+(async () => {
+  try {
+    await setPersistence(auth, browserLocalPersistence);
+    console.log("[script] persistence set: localStorage");
+  } catch (e) {
+    console.error("[script] setPersistence error:", e);
+  }
+})();
+
+// ---------- элементы интерфейса ----------
+const authSection   = document.getElementById("authSection");
+const statusFilterEl= document.getElementById("statusFilter");
+const taskListEl    = document.getElementById("taskList");
+
+// ---------- локальное хранение задач (по пользователю) ----------
+let tasks = [];
+let reminderSound = null;
+let deadlinesTimer = null;
+
+function storageKey() {
+  const uid = auth.currentUser?.uid || "guest";
+  return `tasks_${uid}`;
+}
+function loadTasks()   { tasks = JSON.parse(localStorage.getItem(storageKey())) || []; }
+function saveTasks()   { localStorage.setItem(storageKey(), JSON.stringify(tasks)); }
+function requireAuth() {
+  if (!auth.currentUser) { alert("Сначала войдите в систему"); return false; }
+  return true;
 }
 
-// Добавить задачу из формы
+// ---------- ЛОГИКА ЗАДАЧ ----------
 function addTask() {
-  const title = document.getElementById('taskTitle').value.trim();
-  const deadline = document.getElementById('taskDeadline').value;
-  const assignedTo = document.getElementById('assignedTo').value.trim();
+  if (!requireAuth()) return;
 
-  if (!title || !deadline || !assignedTo) {
+  const titleEl      = document.getElementById('taskTitle');
+  const deadlineEl   = document.getElementById('taskDeadline');
+  const assignedToEl = document.getElementById('assignedTo');
+
+  const title = titleEl.value.trim();
+  const deadline = deadlineEl.value;
+  const assignedTo = assignedToEl.value.trim();
+
+  if (!title || !deadline || !assignedTo || assignedTo === 'Не выбрано') {
     alert('Заполните все поля');
     return;
   }
@@ -23,26 +59,23 @@ function addTask() {
   const task = {
     id: Date.now(),
     title,
-    deadline,                           // ISO-строка из input[type=datetime-local]
+    deadline, // ISO из <input type="datetime-local">
     assignedTo,
     createdAt: new Date().toLocaleString('ru-RU'),
-    status: 'новая'
+    status: 'новая',
   };
 
   tasks.unshift(task);
-  save();
+  saveTasks();
   renderTasks();
 
-  // Очистка полей
-  document.getElementById('taskTitle').value = '';
-  document.getElementById('taskDeadline').value = '';
+  titleEl.value = '';
+  deadlineEl.value = '';
 }
 
-// Показать список (с фильтром по статусу)
 function renderTasks(filter = 'все') {
-  const list = document.getElementById('taskList');
   const now = new Date();
-  list.innerHTML = '';
+  taskListEl.innerHTML = '';
 
   tasks
     .filter(t => {
@@ -67,114 +100,96 @@ function renderTasks(filter = 'все') {
         </select>
         <button onclick="deleteTask(${t.id})">Удалить</button>
       `;
-
-      // Подсветка просрочки
       if (new Date(t.deadline) < now && t.status !== 'выполнена') {
         card.classList.add('overdue');
       }
-
-      list.appendChild(card);
+      taskListEl.appendChild(card);
     });
 }
 
-// Сменить статус задачи
 function changeStatus(id, status) {
+  if (!requireAuth()) return;
   tasks = tasks.map(t => (t.id === id ? { ...t, status } : t));
-  save();
-  renderTasks();
+  saveTasks();
+  renderTasks(statusFilterEl?.value ?? 'все');
 }
 
-// Удалить задачу
 function deleteTask(id) {
+  if (!requireAuth()) return;
   tasks = tasks.filter(t => t.id !== id);
-  save();
-  renderTasks();
+  saveTasks();
+  renderTasks(statusFilterEl?.value ?? 'все');
 }
 
-// Применить фильтр из select
 function filterTasks() {
-  const value = document.getElementById('statusFilter').value;
-  renderTasks(value);
+  renderTasks(statusFilterEl.value);
 }
 
-// Открыть/закрыть модалку
-function openModal()  { document.getElementById('taskModal').style.display = 'flex'; }
-function closeModal() { document.getElementById('taskModal').style.display = 'none'; }
+// ---------- МОДАЛКА (объявляем ОДИН раз) ----------
+function openModal() {
+  if (!requireAuth()) return;
+  const m = document.getElementById('taskModal');
+  if (m) { m.style.display = 'flex'; }
+}
+function closeModal() {
+  const m = document.getElementById('taskModal');
+  if (m) { m.style.display = 'none'; }
+}
 
-// Проверка сроков: напоминание за 5 минут и алерт в момент дедлайна
+// ---------- дедлайны + звук ----------
 function checkDeadlines() {
   const now = new Date();
-
   tasks.forEach(t => {
     if (t.status === 'выполнена') return;
-
     const dl = new Date(t.deadline);
     const diff = dl - now;
-
-    // За 5 минут до дедлайна — короткий звук
     if (diff > 0 && diff < 5 * 60 * 1000 && reminderSound) {
       reminderSound.play().catch(() => {});
     }
-
-    // В момент дедлайна — всплывающее уведомление
     if (diff <= 0) {
       alert(`⏰ Задача "${t.title}" достигла дедлайна!`);
     }
   });
 }
-
-// Проверка звука вручную (по кнопке)
 function testSound() {
-  reminderSound?.play().catch(err => console.log('Ошибка воспроизведения:', err));
+  reminderSound?.play().catch(() => {});
 }
 
-// Готовим всё после загрузки страницы
+// ---------- DOM готов ----------
 document.addEventListener('DOMContentLoaded', () => {
-  // Загружаем звук (активируется после первого клика)
+  // звук
   reminderSound = new Audio('sound/mixkit-wrong-answer-fail-notification-946.mp3');
   reminderSound.volume = 1.0;
+  document.body.addEventListener('click', () => {
+    reminderSound.play().then(() => {
+      reminderSound.pause(); reminderSound.currentTime = 0;
+    }).catch(() => {});
+  }, { once: true });
 
+  // первый рендер (пусто, если не залогинен)
   renderTasks();
-  checkDeadlines();
 });
 
-// Разрешаем проигрывать аудио после первого взаимодействия пользователя
-document.body.addEventListener('click', () => {
-  reminderSound.play().then(() => {
-    reminderSound.pause();
-    reminderSound.currentTime = 0;
-  }).catch(() => {});
-}, { once: true });
+// ---------- реакция на вход/выход ----------
+onAuthStateChanged(auth, (user) => {
+  if (authSection) authSection.style.display = user ? "none" : "block";
 
-// Периодическое обновление
-setInterval(() => {
-  renderTasks();
-  checkDeadlines();
-}, 30000);
-// ====== МОДАЛКА (надёжно) ======
-function openModal() {
-  if (!requireAuth()) return;
-  const m = document.getElementById('taskModal');
-  if (m) { m.classList.add('show'); m.style.display = 'flex'; }
-}
-function closeModal() {
-  const m = document.getElementById('taskModal');
-  if (m) { m.classList.remove('show'); m.style.display = 'none'; }
-}
+  if (user) {
+    loadTasks();
+    renderTasks(statusFilterEl?.value ?? 'все');
 
-// Привязываем клики через JS (чтобы не зависеть от inline-обработчиков)
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('fabAdd')?.addEventListener('click', openModal);
-
-  // Сохранить/Отмена в модалке — два варианта (работают оба):
-  document.getElementById('btnSave')?.addEventListener('click', () => { 
-    addTask(); 
-    closeModal(); 
-  });
-  document.getElementById('btnCancel')?.addEventListener('click', closeModal);
+    if (deadlinesTimer) clearInterval(deadlinesTimer);
+    deadlinesTimer = setInterval(() => {
+      renderTasks(statusFilterEl?.value ?? 'все');
+      checkDeadlines();
+    }, 30000);
+  } else {
+    if (deadlinesTimer) clearInterval(deadlinesTimer);
+    taskListEl.innerHTML = "";
+  }
 });
 
-// ====== СДЕЛАТЬ ФУНКЦИИ ВИДИМЫМИ ДЛЯ HTML (если где-то остались onclick="...") ======
+// ---------- ДЕЛАЕМ ФУНКЦИИ ДОСТУПНЫМИ ДЛЯ HTML (onclick/онchange) ----------
 window.openModal    = openModal;
 window.closeModal   = closeModal;
 window.addTask      = addTask;
