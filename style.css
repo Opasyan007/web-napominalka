@@ -124,7 +124,7 @@ button:active { transform: translateY(1px); }
   content: "";
   position: absolute;
   left: 16px; right: 16px; top: 10px;
-  height: 6px;
+  height: 12px;
   border-radius: 999px;
   background: linear-gradient(90deg, var(--primary), var(--success));
 }
@@ -159,5 +159,6 @@ body.logged-out #btnTestSound,
 body.logged-out .fab {
   display: none !important;
 }
+
 
 
