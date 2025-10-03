@@ -4,8 +4,60 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Менеджер задач - 50 Паскаль</title>
-  <link rel="stylesheet" href="style.css" />
+
+  <!-- важно: версия для сброса кэша -->
+  <link rel="stylesheet" href="style.css?v=38" />
+
+  <style id="fab-hotfix">
+    /* MOBILE: пилюля с белой окантовкой + плюс с белой окантовкой */
+    @media (max-width: 599.98px) {
+      .fab{
+        left:16px !important;
+        right:16px !important;
+        bottom:calc(18px + env(safe-area-inset-bottom)) !important;
+        width:auto !important;
+        height:56px !important;
+        border-radius:999px !important;
+        padding:0 18px !important;
+        background: linear-gradient(135deg, #0ea5e9, #22c55e) !important;
+        border:2px solid #fff !important;
+        box-shadow: 0 12px 28px rgba(0,0,0,.28),
+                    0 0 0 6px rgba(255,255,255,.45) !important;
+        font-size:0 !important; /* скрываем старый '+' */
+        animation: fabPulse 2.8s ease-out infinite;
+      }
+      .fab::before{
+        content:"+" !important;
+        display:inline-block !important;
+        margin-right:10px !important;
+        font-size:28px !important;
+        line-height:1 !important;
+        color:#0a6fde !important;
+        -webkit-text-stroke:2px #fff !important;
+        text-shadow:
+          0 1px 0 #fff,  0 -1px 0 #fff,
+          1px 0 0 #fff, -1px  0 0 #fff,
+          1px 1px 0 #fff, -1px -1px 0 #fff,
+          1px -1px 0 #fff, -1px  1px 0 #fff !important;
+      }
+      .fab::after{
+        position:static !important;
+        display:inline-block !important;
+        margin-left:0 !important;
+        opacity:1 !important;
+        transform:none !important;
+        background:transparent !important;
+        color:#fff !important;
+        padding:0 !important;
+        box-shadow:none !important;
+        content:"Добавить задачу" !important;
+        font-size:16px !important;
+        line-height:1 !important;
+      }
+    }
+  </style>
 </head>
+
 <body>
   <div class="container">
     <h1>Менеджер задач_Веб-напоминалка "50 Паскаль"</h1>
@@ -92,6 +144,7 @@
 
 </body>
 </html>
+
 
 
 
