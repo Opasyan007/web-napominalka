@@ -63,6 +63,18 @@ onAuthStateChanged(auth, (user) => {
   const loggedIn = !!user;
   if (statusEl) statusEl.textContent = loggedIn ? `Авторизован: ${user.email}` : "Не авторизован";
   toggleAuthUI(loggedIn);
+  onAuthStateChanged(auth, (user) => {
+  const loggedIn = !!user;
+
+  // ... твой код ...
+
+  // ✅ Глобальный флаг + событие для других скриптов
+  window.__loggedIn = loggedIn;                                        // ← ДОБАВИЛИ
+  window.dispatchEvent(new CustomEvent('auth-changed', {               // ← ДОБАВИЛИ
+    detail: { loggedIn }
+  }));
+});
+
 
   // делимся состоянием с остальным кодом
   window.__LOGGED_IN__ = loggedIn;
