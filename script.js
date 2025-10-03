@@ -1,8 +1,35 @@
 let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
 let reminderSound;
+let LOGGED_IN = !!window.__LOGGED_IN__; // может прилететь позже из auth.js
+
+// --- Утилита: показывать/скрывать UI задач, если не вошли ---
+function applyAuthVisibility(loggedIn) {
+  LOGGED_IN = loggedIn;
+
+  const filterEl = document.getElementById("statusFilter")?.closest(".form-group");
+  const testBtn  = document.querySelector('button[onclick="testSound()"]');
+  const list     = document.getElementById("taskList");
+  const fab      = document.querySelector(".fab");
+
+  const disp = loggedIn ? "" : "none";
+
+  if (filterEl) filterEl.style.display = disp;
+  if (testBtn)  testBtn.style.display  = disp;
+  if (fab)      fab.style.display      = disp;
+
+  if (list) {
+    if (loggedIn) {
+      renderTasks();
+    } else {
+      list.innerHTML = ""; // очищаем, чтобы никто ничего не видел
+    }
+  }
+}
 
 // === Добавление задачи ===
 function addTask() {
+  if (!LOGGED_IN) { alert("Сначала войдите в систему."); return; }
+
   const title = document.getElementById('taskTitle').value;
   const deadline = document.getElementById('taskDeadline').value;
   const assignedTo = document.getElementById('assignedTo').value;
@@ -32,6 +59,8 @@ function addTask() {
 
 // === Рендер списка ===
 function renderTasks(filter = "все") {
+  if (!LOGGED_IN) return; // не показываем до входа
+
   const list = document.getElementById('taskList');
   list.innerHTML = '';
   const now = new Date();
@@ -69,6 +98,7 @@ function renderTasks(filter = "все") {
 
 // === Смена статуса ===
 function changeStatus(id, newStatus) {
+  if (!LOGGED_IN) return;
   tasks = tasks.map(task => task.id === id ? { ...task, status: newStatus } : task);
   localStorage.setItem('tasks', JSON.stringify(tasks));
   renderTasks();
@@ -76,6 +106,7 @@ function changeStatus(id, newStatus) {
 
 // === Удаление ===
 function deleteTask(id) {
+  if (!LOGGED_IN) return;
   tasks = tasks.filter(task => task.id !== id);
   localStorage.setItem('tasks', JSON.stringify(tasks));
   renderTasks();
@@ -83,12 +114,14 @@ function deleteTask(id) {
 
 // === Фильтр ===
 function filterTasks() {
+  if (!LOGGED_IN) return;
   const filter = document.getElementById("statusFilter").value;
   renderTasks(filter);
 }
 
 // === Модалка ===
 function openModal() {
+  if (!LOGGED_IN) { alert("Войдите, чтобы добавлять задачи."); return; }
   document.getElementById("taskModal").style.display = "flex";
 }
 function closeModal() {
@@ -97,51 +130,12 @@ function closeModal() {
 
 // === Проверка дедлайнов ===
 function checkDeadlines() {
+  if (!LOGGED_IN) return;
   const now = new Date();
   tasks.forEach(task => {
     const deadline = new Date(task.deadline);
     const diffMs = deadline - now;
 
     if (task.status !== "выполнена") {
-      // 🔔 напоминание за 5 минут до дедлайна
       if (diffMs > 0 && diffMs < 300000) {
-        reminderSound.play().catch(()=>{});
-      }
-      // дедлайн наступил
-      if (diffMs <= 0) {
-        alert(`⏰ Задача "${task.title}" достигла дедлайна!`);
-      }
-    }
-  });
-}
-
-// === Тест звука вручную ===
-function testSound() {
-  reminderSound.play().catch(err => console.log("Ошибка воспроизведения:", err));
-}
-
-// === Запуск после загрузки ===
-document.addEventListener("DOMContentLoaded", () => {
-  // Загружаем звук
-  reminderSound = new Audio("sound/mixkit-wrong-answer-fail-notification-946.mp3");
-  reminderSound.volume = 1.0;
-
-  // Рендерим задачи
-  renderTasks();
-  checkDeadlines();
-});
-
-// === Разрешаем звук после первого клика ===
-document.body.addEventListener("click", () => {
-  reminderSound.play().then(() => {
-    reminderSound.pause();
-    reminderSound.currentTime = 0;
-    console.log("🔊 Звук готов к работе");
-  }).catch(()=>{});
-}, { once: true });
-
-// === Таймер обновления (каждые 30 сек) ===
-setInterval(() => {
-  renderTasks();
-  checkDeadlines();
-}, 30000);
+        reminderSound.play().catch(()=>{
