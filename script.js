@@ -171,4 +171,24 @@ document.addEventListener('DOMContentLoaded', () => {
 // Экспортируем для кнопок “Сохранить/Отмена” в разметке (если они inline)
 window.openModal  = openModal;
 window.closeModal = closeModal;
+// если этих функций нет в файле — добавь
+function openModal()  { 
+  if (!requireAuth()) return;
+  const m = document.getElementById('taskModal');
+  if (m){ m.style.display = 'flex'; }
+}
+function closeModal() { 
+  const m = document.getElementById('taskModal');
+  if (m){ m.style.display = 'none'; }
+}
+
+// Экспортируем в window для inline-обработчиков в HTML
+window.openModal   = openModal;
+window.closeModal  = closeModal;
+window.addTask     = addTask;
+window.deleteTask  = deleteTask;
+window.changeStatus= changeStatus;
+window.filterTasks = filterTasks;
+window.testSound   = testSound;
+
 
