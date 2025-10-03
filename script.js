@@ -1,35 +1,14 @@
 let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
 let reminderSound;
-let LOGGED_IN = !!window.__LOGGED_IN__; // может прилететь позже из auth.js
 
-// --- Утилита: показывать/скрывать UI задач, если не вошли ---
-function applyAuthVisibility(loggedIn) {
-  LOGGED_IN = loggedIn;
-
-  const filterEl = document.getElementById("statusFilter")?.closest(".form-group");
-  const testBtn  = document.querySelector('button[onclick="testSound()"]');
-  const list     = document.getElementById("taskList");
-  const fab      = document.querySelector(".fab");
-
-  const disp = loggedIn ? "" : "none";
-
-  if (filterEl) filterEl.style.display = disp;
-  if (testBtn)  testBtn.style.display  = disp;
-  if (fab)      fab.style.display      = disp;
-
-  if (list) {
-    if (loggedIn) {
-      renderTasks();
-    } else {
-      list.innerHTML = ""; // очищаем, чтобы никто ничего не видел
-    }
-  }
+// Helper: включён ли доступ к задачам
+function canUseApp() {
+  return !!window.__authLoggedIn; // флаг выставляет auth.js
 }
 
 // === Добавление задачи ===
 function addTask() {
-  if (!LOGGED_IN) { alert("Сначала войдите в систему."); return; }
-
+  if (!canUseApp()) return;
   const title = document.getElementById('taskTitle').value;
   const deadline = document.getElementById('taskDeadline').value;
   const assignedTo = document.getElementById('assignedTo').value;
@@ -59,9 +38,9 @@ function addTask() {
 
 // === Рендер списка ===
 function renderTasks(filter = "все") {
-  if (!LOGGED_IN) return; // не показываем до входа
-
   const list = document.getElementById('taskList');
+  if (!canUseApp()) { list.innerHTML = ''; return; }
+
   list.innerHTML = '';
   const now = new Date();
 
@@ -88,7 +67,6 @@ function renderTasks(filter = "все") {
         </select>
         <button onclick="deleteTask(${task.id})">Удалить</button>
       `;
-
       if (new Date(task.deadline) < now && task.status !== 'выполнена') {
         taskCard.classList.add('overdue');
       }
@@ -98,7 +76,7 @@ function renderTasks(filter = "все") {
 
 // === Смена статуса ===
 function changeStatus(id, newStatus) {
-  if (!LOGGED_IN) return;
+  if (!canUseApp()) return;
   tasks = tasks.map(task => task.id === id ? { ...task, status: newStatus } : task);
   localStorage.setItem('tasks', JSON.stringify(tasks));
   renderTasks();
@@ -106,7 +84,7 @@ function changeStatus(id, newStatus) {
 
 // === Удаление ===
 function deleteTask(id) {
-  if (!LOGGED_IN) return;
+  if (!canUseApp()) return;
   tasks = tasks.filter(task => task.id !== id);
   localStorage.setItem('tasks', JSON.stringify(tasks));
   renderTasks();
@@ -114,14 +92,14 @@ function deleteTask(id) {
 
 // === Фильтр ===
 function filterTasks() {
-  if (!LOGGED_IN) return;
+  if (!canUseApp()) return;
   const filter = document.getElementById("statusFilter").value;
   renderTasks(filter);
 }
 
 // === Модалка ===
 function openModal() {
-  if (!LOGGED_IN) { alert("Войдите, чтобы добавлять задачи."); return; }
+  if (!canUseApp()) return;
   document.getElementById("taskModal").style.display = "flex";
 }
 function closeModal() {
@@ -130,12 +108,48 @@ function closeModal() {
 
 // === Проверка дедлайнов ===
 function checkDeadlines() {
-  if (!LOGGED_IN) return;
+  if (!canUseApp()) return;
   const now = new Date();
   tasks.forEach(task => {
     const deadline = new Date(task.deadline);
     const diffMs = deadline - now;
-
     if (task.status !== "выполнена") {
-      if (diffMs > 0 && diffMs < 300000) {
-        reminderSound.play().catch(()=>{
+      if (diffMs > 0 && diffMs < 300000) { reminderSound.play().catch(()=>{}); }
+      if (diffMs <= 0) { alert(`⏰ Задача "${task.title}" достигла дедлайна!`); }
+    }
+  });
+}
+
+// === Тест звука вручную ===
+function testSound() {
+  if (!canUseApp()) return;
+  reminderSound.play().catch(err => console.log("Ошибка воспроизведения:", err));
+}
+
+// === Старт ===
+document.addEventListener("DOMContentLoaded", () => {
+  reminderSound = new Audio("sound/mixkit-wrong-answer-fail-notification-946.mp3");
+  reminderSound.volume = 1.0;
+
+  // начально: считаем, что пользователь не авторизован (пока auth.js не сообщит)
+  window.__authLoggedIn = !!window.__authLoggedIn;
+  document.body.classList.toggle('logged-out', !window.__authLoggedIn);
+  document.body.classList.toggle('logged-in',  !!window.__authLoggedIn);
+
+  renderTasks();
+  checkDeadlines();
+});
+
+// === реагируем на изменения авторизации (сигнал из auth.js) ===
+window.addEventListener('auth-changed', (e) => {
+  const loggedIn = !!(e.detail && e.detail.loggedIn);
+  document.body.classList.toggle('logged-out', !loggedIn);
+  document.body.classList.toggle('logged-in',  loggedIn);
+  renderTasks(); // обновим видимость списка
+});
+
+// === Таймер обновления (каждые 30 сек) ===
+setInterval(() => {
+  renderTasks();
+  checkDeadlines();
+}, 30000);
