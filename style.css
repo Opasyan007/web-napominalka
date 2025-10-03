@@ -15,7 +15,7 @@ html, body { height: 100%; margin: 0; }
 
   --task: #00b734;        /* фон карточки задачи */
   --text: #111827;        /* цвет текста */
-  --border: #d6d6d6;      /* границы инпутов */
+  --border: #ffffff;      /* границы инпутов */
 }
 
 body {
@@ -303,4 +303,5 @@ body.logged-out .fab {
     color: #fff !important;
   }
 }
+
 
