@@ -10,12 +10,12 @@ import {
 // ⚠️ Вставь сюда ТВОЙ актуальный конфиг из консоли (Config/Config/Config),
 // а не из npm-вкладки. Поля должны быть ИМЕННО такие.
 const firebaseConfig = {
-  apiKey: "AIzaSyDh2g8c-3QTetKH6zV6o2PS4t8ctZLXow",
+  apiKey: "AIzaSyDh2g8c-3QTetKH6zV60o2PS4t8ctZLXow",
   authDomain: "sinergia-web-napominalka.firebaseapp.com",
   projectId: "sinergia-web-napominalka",
-  storageBucket: "sinergia-web-napominalka.appspot.com",
+  storageBucket: "sinergia-web-napominalka.firebasestorage.app",
   messagingSenderId: "803232203697",
-  appId: "1:803232203697:web:f4125ac125e8727e67390",
+  appId: "1:803232203697:web:f41252ac125e8727e67390"
 };
 
 // ---- init + диагностика ----
