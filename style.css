@@ -102,10 +102,10 @@ button:active { transform: translateY(1px); }
   inset: 0;
   z-index: 10000;                 /* поверх всего */
   background: rgba(0,0,0,.55);    /* темнее фон */
-  backdrop-filter: blur(2px);     /* лёгкий блюр */
+  backdrop-filter: blur(3px);     /* лёгкий блюр */
   justify-content: center;
   align-items: center;
-  padding: 16px;
+  padding: 24px;
 }
 .modal.show { display: flex; }
 
@@ -124,7 +124,7 @@ button:active { transform: translateY(1px); }
   content: "";
   position: absolute;
   left: 16px; right: 16px; top: 10px;
-  height: 12px;
+  height: 18px;
   border-radius: 999px;
   background: linear-gradient(90deg, var(--primary), var(--success));
 }
@@ -159,6 +159,7 @@ body.logged-out #btnTestSound,
 body.logged-out .fab {
   display: none !important;
 }
+
 
 
 
