@@ -89,7 +89,13 @@ function filterTasks() {
 }
 
 // === Модалка ===
-function openModal() { document.getElementById("taskModal").style.display = "flex"; }
+function openModal() {
+  if (!window.currentUser) {  // защита
+    alert("Сначала войдите в систему");
+    return;
+  }
+  document.getElementById("taskModal").style.display = "flex";
+}
 function closeModal() { document.getElementById("taskModal").style.display = "none"; }
 
 // === Проверка дедлайнов ===
@@ -101,7 +107,7 @@ function checkDeadlines() {
     const diffMs = deadline - now;
 
     if (task.status !== "выполнена") {
-      // 🔔 напоминание за 5 минут до дедлайна
+      // 🔔 напоминание за 5 минут
       if (diffMs > 0 && diffMs < 300000) {
         reminderSound.play().catch(()=>{});
       }
@@ -143,3 +149,12 @@ setInterval(() => {
   renderTasks();
   checkDeadlines();
 }, 30000);
+
+// оставляем функции в глобале для inline-обработчиков в HTML
+window.addTask = addTask;
+window.changeStatus = changeStatus;
+window.deleteTask = deleteTask;
+window.filterTasks = filterTasks;
+window.openModal = openModal;
+window.closeModal = closeModal;
+window.testSound = testSound;
