@@ -21,7 +21,7 @@
     </div>
 
     <!-- Фильтр задач -->
-    <div class="form-group">
+    <div id="filterGroup" class="form-group">
       <label for="statusFilter">Фильтр по статусу:</label>
       <select id="statusFilter" onchange="filterTasks()">
         <option value="все">Все</option>
@@ -33,7 +33,7 @@
       </select>
     </div>
 
-    <button onclick="testSound()">Тест звука</button>
+    <button id="btnTestSound" onclick="testSound()">Тест звука</button>
 
     <!-- Список задач -->
     <div id="taskList"></div>
@@ -87,13 +87,7 @@
   </div>
 
   <!-- Подключения скриптов -->
-<script type="module" src="auth.js?v=15"></script>
-<script src="script.js?v=15" defer></script>
-
+  <script type="module" src="auth.js?v=15"></script>
+  <script src="script.js?v=15" defer></script>
 </body>
 </html>
-
-
-
-
-
