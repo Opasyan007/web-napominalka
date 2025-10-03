@@ -78,7 +78,7 @@ button:active { transform: translateY(1px); }
 }
 .overdue { background-color: var(--danger) !important; color: #fff; }
 
-/* ====== ПЛАВАЮЩАЯ КНОПКА "+" (обновлено) ====== */
+/* ====== ПЛАВАЮЩАЯ КНОПКА "+" (контраст, пульс, подпись) ====== */
 .fab {
   position: fixed;
   right: 16px;
@@ -89,7 +89,7 @@ button:active { transform: translateY(1px); }
   height: 64px;
   border-radius: 50%;
 
-  background: #ffffff;              /* контраст с зелёной карточкой */
+  background: #ffffff;
   color: var(--primary);
   border: 2px solid var(--primary);
 
@@ -102,18 +102,47 @@ button:active { transform: translateY(1px); }
 
   box-shadow:
     0 14px 36px rgba(0,0,0,.35),
-    0 0 0 4px rgba(255,255,255,.85); /* белое кольцо вокруг */
+    0 0 0 4px rgba(255,255,255,.85);
   cursor: pointer;
-  transition: transform .12s ease, box-shadow .12s ease;
+  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
 
-  animation: fabPulse 2.4s ease-out infinite; /* лёгкий пульс */
+  animation: fabPulse 2.4s ease-out infinite; /* мягкий «пульс» */
 }
-.fab:hover { transform: translateY(-1px) scale(1.04); }
+
+/* подпись при наведении */
+.fab::after {
+  content: "Добавить задачу";
+  position: absolute;
+  right: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%) translateX(8px);
+  background: rgba(17,24,39,.96);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 14px;
+  white-space: nowrap;
+  box-shadow: 0 10px 24px rgba(0,0,0,.25);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .18s ease, transform .18s ease;
+}
+
+.fab:hover {
+  transform: translateY(-1px) scale(1.12); /* становится больше */
+  filter: saturate(1.05);
+}
+.fab:hover::after {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0); /* подпись «выезжает» */
+}
+
 .fab:active { transform: translateY(1px) scale(.98); }
 
+/* пульс */
 @keyframes fabPulse {
   0%   { box-shadow: 0 14px 36px rgba(0,0,0,.35), 0 0 0 4px rgba(14,165,233,0); }
-  60%  { box-shadow: 0 14px 36px rgba(0,0,0,.35), 0 0 0 12px rgba(14,165,233,.25); }
+  60%  { box-shadow: 0 14px 36px rgba(0,0,0,.35), 0 0 0 16px rgba(14,165,233,.28); }
   100% { box-shadow: 0 14px 36px rgba(0,0,0,.35), 0 0 0 4px rgba(14,165,233,0); }
 }
 
@@ -127,7 +156,12 @@ button:active { transform: translateY(1px); }
   }
 }
 
-/* ====== МОДАЛКА (обновлено) ====== */
+/* уважение к reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .fab { animation: none !important; }
+}
+
+/* ====== МОДАЛКА (улучшенная) ====== */
 .modal {
   display: none;
   position: fixed;
