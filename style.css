@@ -3,19 +3,16 @@
 html, body { height: 100%; margin: 0; }
 
 :root {
-  --bg: #118bd3;          /* фон страницы */
-  --card: #ffffff;        /* цвет карточек/контейнеров */
+  --bg: #118bd3;
+  --card: #ffffff;
   --shadow: 0 6px 20px rgba(0,0,0,.12);
-
-  /* Акценты UI */
-  --primary: #0ea5e9;     /* основной (синий) */
-  --success: #22c55e;     /* зеленый */
+  --primary: #0ea5e9;
+  --success: #22c55e;
   --success-dark: #16a34a;
   --danger: #b32424;
-
-  --task: #00b734;        /* фон карточки задачи */
-  --text: #111827;        /* текст */
-  --border: #d6d6d6;      /* границы инпутов */
+  --task: #00b734;
+  --text: #111827;
+  --border: #d6d6d6;
 }
 
 body {
@@ -81,7 +78,7 @@ button:active { transform: translateY(1px); }
 }
 .overdue { background-color: var(--danger) !important; color: #fff; }
 
-/* ====== FAB (Floating Action Button) — градиент, пульс, подсказка ====== */
+/* ====== FAB (Floating Action Button) — дефолт (круг на десктопе) ====== */
 .fab {
   position: fixed;
   right: 16px;
@@ -109,7 +106,7 @@ button:active { transform: translateY(1px); }
   cursor: pointer;
   transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
 
-  animation: fabPulse 2.4s ease-out infinite; /* мягкий «пульс» */
+  animation: fabPulse 2.4s ease-out infinite;
 }
 
 /* Подсказка слева (desktop) */
@@ -131,6 +128,7 @@ button:active { transform: translateY(1px); }
   transition: opacity .18s ease, transform .18s ease;
 }
 
+/* Чистый ховер */
 .fab:hover {
   transform: translateY(-1px) scale(1.12);
   filter: saturate(1.05);
@@ -139,7 +137,6 @@ button:active { transform: translateY(1px); }
   opacity: 1;
   transform: translateY(-50%) translateX(0);
 }
-
 .fab:active { transform: translateY(1px) scale(.98); }
 
 /* Пульс */
@@ -149,14 +146,10 @@ button:active { transform: translateY(1px); }
   100% { box-shadow: 0 14px 36px rgba(0,0,0,.35), 0 0 0 4px rgba(255,255,255,0); }
 }
 
-/* Подсказка показывается ещё и при фокусе/тапе (подстраховка) */
 .fab:focus::after,
-.fab:active::after {
-  opacity: 1;
-  transform: translateY(-50%) translateX(0);
-}
+.fab:active::after { opacity: 1; transform: translateY(-50%) translateX(0); }
 
-/* ====== МОДАЛКА (улучшенная) ====== */
+/* ====== МОДАЛКА ====== */
 .modal {
   display: none;
   position: fixed;
@@ -220,7 +213,7 @@ body.logged-out .fab {
 
 /* ===== FAB: планшет и мобильный тюнинг ===== */
 
-/* Планшет (600–1024): крупнее круг, заметнее контур, подсказка чуть больше */
+/* Планшет (600–1024) */
 @media (min-width: 600px) and (max-width: 1024px) {
   .fab {
     right: 24px;
@@ -238,7 +231,7 @@ body.logged-out .fab {
   }
 }
 
-/* Телефон (<600): превращаем FAB в «пилюлю» + белая окантовка овала и плюса */
+/* Телефон (<600): «пилюля» */
 @media (max-width: 599.98px) {
   .fab {
     left: 16px;
@@ -249,28 +242,24 @@ body.logged-out .fab {
     border-radius: 999px;
     padding: 0 18px;
 
-    /* белая рамка и внешнее «кольцо» */
-    border: 2px solid #fff !important;
+    /* ТЁМНАЯ окантовка и белое внешнее кольцо */
+    border: 2px solid #111 !important;
     box-shadow:
       0 12px 28px rgba(0,0,0,.28),
       0 0 0 6px rgba(255,255,255,.45) !important;
 
-    /* скрываем исходный текст "+", рисуем его отдельно в ::before */
-    font-size: 0;
+    font-size: 0; /* прячем исходный '+' */
     animation: fabPulse 2.8s ease-out infinite;
   }
 
-  /* ПЛЮС с белой окантовкой */
   .fab::before {
     content: "+";
-    font-size: 28px;          /* размер плюса */
+    font-size: 28px;
     line-height: 1;
     display: inline-block;
     margin-right: 10px;
-
-    color: #0a6fde;           /* заливка плюса (можешь поменять) */
-    -webkit-text-stroke: 2px #fff; /* белая окантовка (Chrome/Safari) */
-    /* Фоллбэк для Firefox — имитация обводки */
+    color: #0a6fde;
+    -webkit-text-stroke: 2px #fff;
     text-shadow:
       0 1px 0 #fff,  0 -1px 0 #fff,
       1px 0 0 #fff, -1px  0 0 #fff,
@@ -278,7 +267,6 @@ body.logged-out .fab {
       1px -1px 0 #fff, -1px  1px 0 #fff;
   }
 
-  /* Подпись — белая внутри пилюли */
   .fab::after {
     position: static;
     display: inline-block;
@@ -292,6 +280,11 @@ body.logged-out .fab {
     content: "Добавить задачу";
     font-size: 16px;
     line-height: 1;
+    /* Читабельность на градиенте */
+    -webkit-text-stroke: 0; 
+    text-shadow: 0 1px 2px rgba(0,0,0,.35);
+    font-weight: 700;
+    letter-spacing: .2px;
   }
 
   .fab:hover { transform: translateY(-1px) scale(1.06); }
@@ -302,33 +295,11 @@ body.logged-out .fab {
 @media (prefers-reduced-motion: reduce) {
   .fab { animation: none !important; }
 }
-/* FAB: черная обводка у надписи */
-.fab::after{
-  /* webkit-обводка */
-  -webkit-text-stroke: .8px #000 !important;
-  /* фоллбэк для Firefox — псевдо-обводка */
-  text-shadow:
-    0 1px 0 #000,  0 -1px 0 #000,
-    1px 0 0 #000, -1px  0 0 #000 !important;
-}
-/* FAB: черная рамка у пилюли */
+
+/* ===== ГЛОБАЛЬНО: тёмная окантовка FAB на всех ширинах ===== */
 .fab{
-  border: 2px solid #111 !important; /* была белая — стала черная */
+  border: 2px solid #111 !important;
   box-shadow:
     0 12px 28px rgba(0,0,0,.28),
-    0 0 0 6px rgba(255,255,255,.45) !important; /* внешнее белое кольцо оставили */
+    0 0 0 6px rgba(255,255,255,.45) !important;
 }
-<style id="fab-label-fix">
-  /* Чёткая надпись внутри FAB на всех экранах */
-  .fab::after{
-    -webkit-text-stroke: 0 !important;                 /* убрать чёрную обводку */
-    text-shadow: 0 1px 2px rgba(0,0,0,.35) !important;  /* мягкая тень вместо обводки */
-    color: #fff !important;
-    font-weight: 700 !important;
-    letter-spacing: .2px !important;
-  }
-</style>
-
-
-
-
