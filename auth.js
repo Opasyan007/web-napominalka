@@ -1,4 +1,4 @@
-// auth.js
+// auth.js (type="module")
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 import {
   getAuth,
@@ -10,7 +10,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDh2g8c-3QTetKH6zV60o2PS4t8ctZLXow", // ← тут латинская z
+  apiKey: "AIzaSyDh2g8c-3QTetKH6zV60o2PS4t8ctZLXow",
   authDomain: "sinergia-web-napominalka.firebaseapp.com",
   projectId: "sinergia-web-napominalka",
   storageBucket: "sinergia-web-napominalka.appspot.com",
@@ -21,22 +21,37 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
+// ——— DOM
+const emailEl  = document.getElementById("email");
+const passEl   = document.getElementById("password");
+const statusEl = document.getElementById("status");
+const btnLogin = document.getElementById("btnLogin");
+const btnLogout= document.getElementById("btnLogout");
+
+// ——— Показ/скрытие полей логина (чтобы не было ошибки — определяем функцию)
+function toggleAuthUI(loggedIn) {
+  // сам блок авторизации пусть всегда виден
+  if (emailEl)  emailEl.style.display  = loggedIn ? "none" : "";
+  if (passEl)   passEl.style.display   = loggedIn ? "none" : "";
+  if (btnLogin) btnLogin.style.display = loggedIn ? "none" : "";
+  if (btnLogout)btnLogout.style.display= "";           // показываем всегда
+}
+
 try {
   await setPersistence(auth, browserLocalPersistence);
 } catch (e) {
   console.error("[auth] setPersistence error:", e);
 }
 
-const emailEl = document.getElementById("email");
-const passEl  = document.getElementById("password");
-const statusEl = document.getElementById("status");
-const btnLogin = document.getElementById("btnLogin");
-const btnLogout = document.getElementById("btnLogout");
-
+// ——— Логин/логаут
 btnLogin?.addEventListener("click", async (e) => {
   e.preventDefault();
   try {
-    await signInWithEmailAndPassword(auth, (emailEl?.value || "").trim(), passEl?.value || "");
+    await signInWithEmailAndPassword(
+      auth,
+      (emailEl?.value || "").trim(),
+      passEl?.value || ""
+    );
   } catch (err) {
     alert(`Ошибка: ${err.code}\n${err.message}`);
   }
@@ -51,22 +66,23 @@ btnLogout?.addEventListener("click", async (e) => {
   }
 });
 
+// ——— Основной наблюдатель
 onAuthStateChanged(auth, (user) => {
   const loggedIn = !!user;
 
-  // Статус
-  if (statusEl) statusEl.textContent = loggedIn ? `Авторизован: ${user.email}` : "Не авторизован";
+  // статус
+  if (statusEl) {
+    statusEl.textContent = loggedIn ? `Авторизован: ${user.email}` : "Не авторизован";
+  }
 
-  // Поля входа прячем/показываем (как у вас было)
-  toggleAuthUI(loggedIn);
+  // поля входа
+  try { toggleAuthUI(loggedIn); } catch(e) { console.warn("toggleAuthUI error:", e); }
 
-  // Классы на <body> — основная метка
-  document.body.classList.toggle('logged-in',  loggedIn);
-  document.body.classList.toggle('logged-out', !loggedIn);
-
-  // Глобальный флаг (на всякий случай)
+  // ключевые метки для остального приложения
+  document.body.classList.toggle("logged-in",  loggedIn);
+  document.body.classList.toggle("logged-out", !loggedIn);
   window.__loggedIn = loggedIn;
 
-  // Событие для остальных скриптов
-  window.dispatchEvent(new CustomEvent('auth-changed', { detail: { loggedIn } }));
+  // уведомим другие скрипты (script.js)
+  window.dispatchEvent(new CustomEvent("auth-changed", { detail: { loggedIn } }));
 });
