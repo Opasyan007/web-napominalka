@@ -76,6 +76,21 @@ button:active { transform: translateY(1px); }
   color: #fff;
   word-wrap: break-word;
 }
+/* Отступ между селектом статуса и кнопкой "Удалить" внутри карточки задачи */
+.task-card select{
+  margin-top: 6px;
+  margin-bottom: 12px; /* ← это как раз "чуть спустить" кнопку */
+}
+
+/* На всякий случай — если где-то будет другая разметка */
+.task-card button{
+  margin-top: 10px;
+}
+.task-card select {
+  display: block;  /* на всякий случай */
+  width: 100%;
+}
+
 .overdue { background-color: var(--danger) !important; color: #fff; }
 
 /* ====== FAB (Floating Action Button) — дефолт (круг на десктопе) ====== */
@@ -464,6 +479,7 @@ body.logged-out .fab {
   /* отключаем старое «всплывающее» поведение */
   .fab:hover::after{ opacity: 1 !important; transform: none !important; }
 }
+
 
 
 
