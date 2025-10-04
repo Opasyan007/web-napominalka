@@ -32,12 +32,10 @@ function openAssigneesModal(){
   renderAssigneesList();
   document.getElementById('assigneesModal').style.display = 'flex';
 }
-
 function closeAssigneesModal(){
   document.getElementById('assigneesModal').style.display = 'none';
-  renderAssigneeSelect();
+  renderAssigneeSelect(); // обновим селект после изменений
 }
-
 function addAssignee(name) {
   const n = (name || '').trim();
   if (!n) { alert('Введите ФИО'); return; }
@@ -48,14 +46,12 @@ function addAssignee(name) {
   renderAssigneesList();
   renderAssigneeSelect();
 }
-
 function removeAssigneeByIndex(idx){
   assignees.splice(idx,1);
   saveAssignees();
   renderAssigneesList();
   renderAssigneeSelect();
 }
-
 function renderAssigneesList(){
   const box = document.getElementById('assigneesList');
   box.innerHTML = '';
@@ -77,16 +73,6 @@ document.addEventListener('click', (e) => {
     const idx = +e.target.dataset.idx;
     removeAssigneeByIndex(idx);
   }
-});
-
-// Кнопки в модалке «Ответственные»
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('btnManageAssignees')?.addEventListener('click', openAssigneesModal);
-  document.getElementById('btnAddAssignee')?.addEventListener('click', () => {
-    addAssignee(document.getElementById('assigneeInput').value);
-    document.getElementById('assigneeInput').value = '';
-    document.getElementById('assigneeInput').focus();
-  });
 });
 
 // ====== Задачи ======
@@ -163,13 +149,11 @@ function changeStatus(id, newStatus) {
   saveTasks();
   renderTasks();
 }
-
 function deleteTask(id) {
   tasks = tasks.filter(task => task.id !== id);
   saveTasks();
   renderTasks();
 }
-
 function filterTasks() {
   const filter = document.getElementById("statusFilter").value;
   renderTasks(filter);
@@ -201,13 +185,12 @@ function checkDeadlines() {
     }
   });
 }
-
 function testSound() {
   if (!isLoggedIn()) { alert('Сначала войдите.'); return; }
   reminderSound.play().catch(err => console.log("Ошибка воспроизведения:", err));
 }
 
-// ====== Старт ======
+// ====== Старт / привязки ======
 document.addEventListener("DOMContentLoaded", () => {
   // звук
   reminderSound = new Audio("sound/mixkit-wrong-answer-fail-notification-946.mp3");
@@ -231,21 +214,39 @@ document.addEventListener("DOMContentLoaded", () => {
     }).catch(()=>{});
   }, { once: true });
 
-  // ===== Привязки кнопок модалок/ FAB (без inline) =====
-  document.getElementById('btnOpenModal')?.addEventListener('click', openModal);
-  document.getElementById('btnTaskSave')?.addEventListener('click', () => { if (addTask()) closeModal(); });
-  document.getElementById('btnTaskCancel')?.addEventListener('click', closeModal);
+  // ===== Привязки кнопок / модалки
+  const btnOpenModal      = document.getElementById('btnOpenModal');
+  const btnTaskSave       = document.getElementById('btnTaskSave');
+  const btnTaskCancel     = document.getElementById('btnTaskCancel');
+  const btnManageAssignees= document.getElementById('btnManageAssignees');
+  const btnAddAssignee    = document.getElementById('btnAddAssignee');
+  const btnAssigneesDone  = document.getElementById('btnAssigneesDone');
+
+  btnOpenModal?.addEventListener('click', openModal);
+  btnTaskSave?.addEventListener('click', () => { if (addTask()) closeModal(); });
+  btnTaskCancel?.addEventListener('click', closeModal);
+
+  btnManageAssignees?.addEventListener('click', openAssigneesModal);
+  btnAddAssignee?.addEventListener('click', () => {
+    addAssignee(document.getElementById('assigneeInput').value);
+    document.getElementById('assigneeInput').value = '';
+    document.getElementById('assigneeInput').focus();
+  });
+  // <<< ВОТ ЭТОГО НЕ ХВАТАЛО
+  btnAssigneesDone?.addEventListener('click', closeAssigneesModal);
+
+  const taskModal      = document.getElementById('taskModal');
+  const assigneesModal = document.getElementById('assigneesModal');
 
   // закрытие кликом по фону
-  const taskModal = document.getElementById('taskModal');
   taskModal?.addEventListener('click', (e) => { if (e.target === taskModal) closeModal(); });
+  assigneesModal?.addEventListener('click', (e) => { if (e.target === assigneesModal) closeAssigneesModal(); });
 
-  // и по Esc
+  // закрытие по Esc
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-      if (taskModal?.style.display === 'flex') closeModal();
-      const assigneesModal = document.getElementById('assigneesModal');
       if (assigneesModal?.style.display === 'flex') closeAssigneesModal();
+      else if (taskModal?.style.display === 'flex') closeModal();
     }
   });
 });
