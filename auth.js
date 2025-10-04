@@ -52,7 +52,21 @@ btnLogout?.addEventListener("click", async (e) => {
 });
 
 onAuthStateChanged(auth, (user) => {
-  if (statusEl) {
-    statusEl.textContent = user ? `Авторизован: ${user.email}` : "Не авторизован";
-  }
+  const loggedIn = !!user;
+
+  // Статус
+  if (statusEl) statusEl.textContent = loggedIn ? `Авторизован: ${user.email}` : "Не авторизован";
+
+  // Поля входа прячем/показываем (как у вас было)
+  toggleAuthUI(loggedIn);
+
+  // Классы на <body> — основная метка
+  document.body.classList.toggle('logged-in',  loggedIn);
+  document.body.classList.toggle('logged-out', !loggedIn);
+
+  // Глобальный флаг (на всякий случай)
+  window.__loggedIn = loggedIn;
+
+  // Событие для остальных скриптов
+  window.dispatchEvent(new CustomEvent('auth-changed', { detail: { loggedIn } }));
 });
