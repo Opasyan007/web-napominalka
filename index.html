@@ -5,14 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Менеджер задач - 50 Паскаль</title>
 
-  <!-- ОБНОВИ номер версии, чтобы сбросить кэш! -->
   <link rel="stylesheet" href="style.css?v=65" />
 </head>
 <body>
   <div class="container">
     <h1>Менеджер задач_Веб-напоминалка "50 Паскаль"</h1>
 
-    <!-- 🔐 Блок авторизации -->
+    <!-- Блок авторизации -->
     <div id="authSection" class="card">
       <h3>Авторизация</h3>
       <input id="email" type="email" placeholder="Email" autocomplete="username" />
@@ -25,7 +24,7 @@
     <!-- Фильтр задач -->
     <div id="filterGroup" class="form-group">
       <label for="statusFilter">Фильтр по статусу:</label>
-      <!-- можно оставить onchange, если уже используете -->
+ 
       <select id="statusFilter" onchange="filterTasks()">
         <option value="все">Все</option>
         <option value="новая">Новая</option>
@@ -42,7 +41,7 @@
     <div id="taskList"></div>
   </div>
 
-  <!-- Плавающая кнопка (label и плюс рисуются через CSS) -->
+  <!-- Плавающая кнопка -->
   <button class="fab" id="btnOpenModal" type="button" aria-label="Добавить задачу"></button>
 
   <!-- Модалка: новая задача -->
@@ -97,11 +96,11 @@
     </div>
   </div>
 
-  <!-- Скрипты (поднимите версии для кэша) -->
   <script type="module" src="auth.js?v=69"></script>
   <script src="script.js?v=69" defer></script>
 </body>
 </html>
+
 
 
 
