@@ -1,115 +1,13 @@
+<!DOCTYPE html>
+<html lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Менеджер задач - 50 Паскаль</title>
 
-  <!-- версия для сброса кэша -->
-  <link rel="stylesheet" href="style.css?v=39" />
-
-<style id="fab-unify">
-  .fab{
-    position: fixed;
-    left: 16px !important;
-    right: 16px !important;
-    bottom: calc(18px + env(safe-area-inset-bottom)) !important;
-    z-index: 9999;
-
-    height: 56px !important;
-    width: auto !important;
-    border-radius: 999px !important;
-    padding: 0 20px !important;
-
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 10px !important;
-
-    background: linear-gradient(135deg, #0ea5e9, #22c55e) !important;
-
-    /* тёмная окантовка + белое внешнее «кольцо» */
-    border: 2px solid #111 !important;
-    box-shadow: 0 12px 28px rgba(0,0,0,.28), 0 0 0 6px rgba(255,255,255,.45) !important;
-
-    /* полностью глушим любой текст внутри FAB */
-    font-size: 0 !important;
-    line-height: 0 !important;
-    color: transparent !important;
-    -webkit-text-stroke: 0 !important;
-    text-shadow: none !important;
-
-    cursor: pointer;
-    transition: transform .18s ease !important;
-    animation: fabPulse 2.4s ease-out infinite !important;
-  }
-
-  /* сброс «на всякий случай» */
-  .fab::before, .fab::after{
-    -webkit-text-stroke: 0 !important;
-    text-shadow: none !important;
-  }
-
-  /* рисуем один белый плюс с округлыми концами (SVG mask) */
-  .fab::before{
-    content: "" !important;
-    display: inline-block !important;
-    width: 28px !important;
-    height: 28px !important;
-    margin-right: 10px !important;
-
-    background: #fff !important;
-    -webkit-mask: url("data:image/svg+xml;utf8,\
-<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
-  <path d='M12 3v18M3 12h18' stroke='black' stroke-width='4' stroke-linecap='round' fill='none'/>\
-</svg>") center/100% 100% no-repeat !important;
-            mask: url("data:image/svg+xml;utf8,\
-<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
-  <path d='M12 3v18M3 12h18' stroke='black' stroke-width='4' stroke-linecap='round' fill='none'/>\
-</svg>") center/100% 100% no-repeat !important;
-
-    filter: drop-shadow(0 1px 1px rgba(0,0,0,.25)) !important;
-  }
-
-  /* подпись — всегда видна */
-  .fab::after{
-    content: "Добавить задачу" !important;
-    position: static !important;
-    display: inline-block !important;
-    opacity: 1 !important;
-    transform: none !important;
-    background: transparent !important;
-    color: #fff !important;
-    padding: 0 !important;
-    font-size: 16px !important;
-    line-height: 1 !important;
-    font-weight: 700 !important;
-    letter-spacing: .2px !important;
-    text-shadow: 0 1px 2px rgba(0,0,0,.35) !important; /* читабельно на градиенте */
-  }
-
-  .fab:hover{ transform: translateY(-1px) scale(1.03) !important; }
-  .fab:active{ transform: translateY(1px) scale(.98) !important; }
-
-  /* чуть крупнее на широких экранах */
-  @media (min-width: 768px){
-    .fab{
-      left: 24px !important;
-      right: 24px !important;
-      height: 64px !important;
-      padding: 0 24px !important;
-    }
-    .fab::before{ width: 30px !important; height: 30px !important; margin-right: 0 !important; }
-    .fab::after{ font-size: 18px !important; }
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    .fab{ animation: none !important; }
-  }
-</style>
-
-
+  <!-- ОБНОВИ номер версии, чтобы сбросить кэш! -->
+  <link rel="stylesheet" href="style.css?v=54" />
 </head>
-
-
 <body>
   <div class="container">
     <h1>Менеджер задач_Веб-напоминалка "50 Паскаль"</h1>
@@ -144,10 +42,9 @@
   </div>
 
   <!-- Плавающая кнопка -->
- <button class="fab" type="button" aria-label="Добавить задачу" onclick="openModal()"></button>
+  <button class="fab" type="button" aria-label="Добавить задачу" onclick="openModal()"></button>
 
-
-  <!-- Модалка для новой задачи -->
+  <!-- Модалка: новая задача -->
   <div id="taskModal" class="modal">
     <div class="modal-content">
       <h2>Новая задача</h2>
@@ -164,24 +61,11 @@
 
       <div class="form-group">
         <label for="assignedTo">Ответственный:</label>
-        <select id="assignedTo">
-          <option>Не выбрано</option>
-          <option>Ахметзянов Р.И.</option>
-          <option>Кузьмина Е.П.</option>
-          <option>Галимов А.И.</option>
-          <option>Смирнов П.С.</option>
-          <option>Шарипова Л.Н.</option>
-          <option>Иванов А В.</option>
-          <option>Зайнуллин И.М.</option>
-          <option>Васильева Н.В.</option>
-          <option>Миннахметова А.И.</option>
-          <option>Сафин Б.Р.</option>
-          <option>Николаева Д.А.</option>
-          <option>Егоров Н.Д.</option>
-          <option>Мухаметзянова Д. Р.</option>
-          <option>Попов М.И.</option>
-          <option>Хасанова Г.К.</option>
-        </select>
+        <div class="row-inline">
+          <select id="assignedTo"></select>
+          <button id="btnManageAssignees" type="button" class="mini-btn" title="Управление списком">⚙️</button>
+        </div>
+        <small class="hint">Нажмите ⚙️ чтобы добавить/удалить ответственных</small>
       </div>
 
       <div class="modal-buttons">
@@ -191,49 +75,29 @@
     </div>
   </div>
 
-  <!-- Подключения скриптов -->
-  <script type="module" src="auth.js?v=53"></script>
-<script src="script.js?v=53" defer></script>
+  <!-- Модалка: управление ответственными -->
+  <div id="assigneesModal" class="modal">
+    <div class="modal-content">
+      <h2>Список ответственных</h2>
 
+      <div class="form-group">
+        <label for="assigneeInput">Добавить нового:</label>
+        <div class="row-inline">
+          <input id="assigneeInput" type="text" placeholder="ФИО (например: Иванов И.И.)" />
+          <button id="btnAddAssignee" type="button" class="save-btn">Добавить</button>
+        </div>
+      </div>
+
+      <div id="assigneesList" class="chips"></div>
+
+      <div class="modal-buttons">
+        <button class="cancel-btn" onclick="closeAssigneesModal()">Готово</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Скрипты -->
+  <script type="module" src="auth.js?v=54"></script>
+  <script src="script.js?v=54" defer></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
