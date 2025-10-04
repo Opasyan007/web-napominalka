@@ -26,39 +26,50 @@
 
     background: linear-gradient(135deg, #0ea5e9, #22c55e) !important;
 
-    /* ← ТЁМНАЯ ОКАНТОВКА ДЛЯ ВСЕХ УСТРОЙСТВ */
+    /* тёмная окантовка + белое внешнее «кольцо» */
     border: 2px solid #111 !important;
+    box-shadow: 0 12px 28px rgba(0,0,0,.28), 0 0 0 6px rgba(255,255,255,.45) !important;
 
-    /* белое внешнее «кольцо», чтобы кнопка не терялась */
-    box-shadow:
-      0 12px 28px rgba(0,0,0,.28),
-      0 0 0 6px rgba(255,255,255,.45) !important;
+    /* полностью глушим любой текст внутри FAB */
+    font-size: 0 !important;
+    line-height: 0 !important;
+    color: transparent !important;
+    -webkit-text-stroke: 0 !important;
+    text-shadow: none !important;
 
-    font-size: 0 !important; /* прячем старый '+' из HTML */
-    color: #fff !important;
     cursor: pointer;
     transition: transform .18s ease !important;
-    animation: fabPulse 2.4s ease-out infinite !important; /* keyframes есть в style.css */
+    animation: fabPulse 2.4s ease-out infinite !important;
   }
 
-  /* Плюс оставляем с белой окантовкой — контрастнее на градиенте */
+  /* сброс «на всякий случай» */
+  .fab::before, .fab::after{
+    -webkit-text-stroke: 0 !important;
+    text-shadow: none !important;
+  }
+
+  /* рисуем один белый плюс с округлыми концами (SVG mask) */
   .fab::before{
-    content: "+" !important;
+    content: "" !important;
     display: inline-block !important;
-    font-size: 28px !important;
-    line-height: 1 !important;
-    margin-right: 2px !important;
+    width: 28px !important;
+    height: 28px !important;
+    margin-right: 10px !important;
 
-    color: #0a6fde !important;
-    -webkit-text-stroke: 2px #fff !important;
-    text-shadow:
-      0 1px 0 #fff,  0 -1px 0 #fff,
-      1px 0 0 #fff, -1px  0 0 #fff,
-      1px 1px 0 #fff, -1px -1px 0 #fff,
-      1px -1px 0 #fff, -1px  1px 0 #fff !important;
+    background: #fff !important;
+    -webkit-mask: url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
+  <path d='M12 3v18M3 12h18' stroke='black' stroke-width='4' stroke-linecap='round' fill='none'/>\
+</svg>") center/100% 100% no-repeat !important;
+            mask: url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
+  <path d='M12 3v18M3 12h18' stroke='black' stroke-width='4' stroke-linecap='round' fill='none'/>\
+</svg>") center/100% 100% no-repeat !important;
+
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,.25)) !important;
   }
 
-  /* Подпись — всегда видна */
+  /* подпись — всегда видна */
   .fab::after{
     content: "Добавить задачу" !important;
     position: static !important;
@@ -68,9 +79,11 @@
     background: transparent !important;
     color: #fff !important;
     padding: 0 !important;
-    box-shadow: none !important;
     font-size: 16px !important;
     line-height: 1 !important;
+    font-weight: 700 !important;
+    letter-spacing: .2px !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,.35) !important; /* читабельно на градиенте */
   }
 
   .fab:hover{ transform: translateY(-1px) scale(1.03) !important; }
@@ -84,7 +97,7 @@
       height: 64px !important;
       padding: 0 24px !important;
     }
-    .fab::before{ font-size: 32px !important; }
+    .fab::before{ width: 30px !important; height: 30px !important; margin-right: 0 !important; }
     .fab::after{ font-size: 18px !important; }
   }
 
@@ -92,6 +105,7 @@
     .fab{ animation: none !important; }
   }
 </style>
+
 
 </head>
 
@@ -183,6 +197,7 @@
 
 </body>
 </html>
+
 
 
 
