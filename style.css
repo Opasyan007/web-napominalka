@@ -302,3 +302,14 @@ body.logged-out .fab {
 @media (prefers-reduced-motion: reduce) {
   .fab { animation: none !important; }
 }
+/* FAB: черная обводка у надписи */
+.fab::after{
+  /* webkit-обводка */
+  -webkit-text-stroke: .8px #000 !important;
+  /* фоллбэк для Firefox — псевдо-обводка */
+  text-shadow:
+    0 1px 0 #000,  0 -1px 0 #000,
+    1px 0 0 #000, -1px  0 0 #000 !important;
+}
+
+
