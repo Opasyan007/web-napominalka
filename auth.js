@@ -1,4 +1,3 @@
-// auth.js (замените целиком)
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 import {
@@ -30,7 +29,6 @@ const statusEl    = document.getElementById("status");
 const btnLogin    = document.getElementById("btnLogin");
 const btnLogout   = document.getElementById("btnLogout");
 
-// Показываем/прячем поля входа (секцию не скрываем)
 function toggleAuthUI(loggedIn) {
   if (authSection) authSection.style.display = "block";
   if (emailEl)     emailEl.style.display     = loggedIn ? "none" : "";
