@@ -1,4 +1,4 @@
-// ====== Память/данные ======
+
 const TASKS_KEY = 'tasks';
 const ASSIGNEES_KEY = 'assignees';
 
@@ -11,14 +11,13 @@ const DEFAULT_ASSIGNEES = [
 let tasks = JSON.parse(localStorage.getItem(TASKS_KEY)) || [];
 let assignees = JSON.parse(localStorage.getItem(ASSIGNEES_KEY)) || DEFAULT_ASSIGNEES.slice();
 let reminderSound;
-let audioPrimed = false; // ← флаг, что звук разрешили
+let audioPrimed = false;
 
-// ====== Утилиты ======
 function saveTasks(){ localStorage.setItem(TASKS_KEY, JSON.stringify(tasks)); }
 function saveAssignees(){ localStorage.setItem(ASSIGNEES_KEY, JSON.stringify(assignees)); }
 function isLoggedIn(){ return window.__loggedIn === true || document.body.classList.contains('logged-in'); }
 
-// ====== Рендер выпадашки "Ответственный" ======
+//Рендер выпадашки "Ответственный"
 function renderAssigneeSelect() {
   const sel = document.getElementById('assignedTo');
   if (!sel) return;
@@ -27,7 +26,6 @@ function renderAssigneeSelect() {
   assignees.forEach(name => sel.appendChild(new Option(name, name)));
 }
 
-// ====== Управление ответственными ======
 function openAssigneesModal(){
   if (!isLoggedIn()) { alert('Сначала войдите.'); return; }
   renderAssigneesList();
@@ -68,7 +66,7 @@ function renderAssigneesList(){
   });
 }
 
-// делегирование клика по «крестику» у чипа
+
 document.addEventListener('click', (e) => {
   if (e.target && e.target.classList.contains('chip-del')) {
     const idx = +e.target.dataset.idx;
@@ -76,7 +74,7 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// ====== Задачи ======
+
 function addTask() {
   if (!isLoggedIn()) { alert('Сначала войдите.'); return false; }
 
@@ -102,7 +100,7 @@ function addTask() {
   saveTasks();
   renderTasks();
 
-  // очистка формы
+
   document.getElementById('taskTitle').value = '';
   document.getElementById('taskDeadline').value = '';
   document.getElementById('assignedTo').value = '';
@@ -160,7 +158,7 @@ function filterTasks() {
   renderTasks(filter);
 }
 
-// ====== Модалки (новая задача) ======
+//Модалки
 function openModal() {
   if (!isLoggedIn()) { alert('Сначала войдите.'); return; }
   document.getElementById("taskModal").style.display = "flex";
@@ -169,11 +167,11 @@ function closeModal() {
   document.getElementById("taskModal").style.display = "none";
 }
 
-// ====== Аудио ======
+//Аудио
 async function primeAudioOnce() {
   if (audioPrimed) return;
   try {
-    // безопасный прайм: быстрое play/pause в capture-фазе до любых других обработчиков
+   
     reminderSound.muted = true;
     await reminderSound.play();
     reminderSound.pause();
@@ -182,13 +180,12 @@ async function primeAudioOnce() {
     audioPrimed = true;
     console.log("🔊 Звук готов к работе");
   } catch (_) {
-    // молча, попробуем позже
   }
 }
 
 async function testSound() {
   if (!isLoggedIn()) { alert('Сначала войдите.'); return; }
-  // если вдруг не успели пропраймить — праймим в рамках этого же жеста
+
   if (!audioPrimed) { await primeAudioOnce(); }
   try {
     reminderSound.currentTime = 0;
@@ -215,13 +212,12 @@ function checkDeadlines() {
   });
 }
 
-// ====== Старт / привязки ======
+
 document.addEventListener("DOMContentLoaded", () => {
   // звук
   reminderSound = new Audio("sound/mixkit-wrong-answer-fail-notification-946.mp3");
   reminderSound.volume = 1.0;
 
-  // если нет списка в LS — положим дефолт
   if (!localStorage.getItem(ASSIGNEES_KEY)) {
     saveAssignees();
   }
@@ -230,10 +226,9 @@ document.addEventListener("DOMContentLoaded", () => {
   renderTasks();
   checkDeadlines();
 
-  // Праймим АУДИО заранее на ПЕРВЫЙ клик — capture=true, чтобы сработало до кнопки
+
   document.body.addEventListener("click", () => { primeAudioOnce(); }, { once: true, capture: true });
 
-  // ===== Привязки кнопок / модалки
   const btnOpenModal       = document.getElementById('btnOpenModal');
   const btnTaskSave        = document.getElementById('btnTaskSave');
   const btnTaskCancel      = document.getElementById('btnTaskCancel');
@@ -263,11 +258,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const taskModal      = document.getElementById('taskModal');
   const assigneesModal = document.getElementById('assigneesModal');
 
-  // закрытие кликом по фону
+
   taskModal?.addEventListener('click', (e) => { if (e.target === taskModal) closeModal(); });
   assigneesModal?.addEventListener('click', (e) => { if (e.target === assigneesModal) closeAssigneesModal(); });
 
-  // закрытие по Esc
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       if (assigneesModal?.style.display === 'flex') closeAssigneesModal();
@@ -276,18 +270,18 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// реакция на смену авторизации от auth.js
+
 window.addEventListener('auth-changed', () => {
   renderTasks();
 });
 
-// таймер обновлений
+
 setInterval(() => {
   renderTasks();
   checkDeadlines();
 }, 30000);
 
-// Экспорт (если где-то остались inline-обработчики)
+
 window.addTask = addTask;
 window.changeStatus = changeStatus;
 window.deleteTask = deleteTask;
