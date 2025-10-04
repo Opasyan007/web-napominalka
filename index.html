@@ -6,7 +6,7 @@
   <title>Менеджер задач - 50 Паскаль</title>
 
   <!-- ОБНОВИ номер версии, чтобы сбросить кэш! -->
-  <link rel="stylesheet" href="style.css?v=54" />
+  <link rel="stylesheet" href="style.css?v=65" />
 </head>
 <body>
   <div class="container">
@@ -17,7 +17,7 @@
       <h3>Авторизация</h3>
       <input id="email" type="email" placeholder="Email" autocomplete="username" />
       <input id="password" type="password" placeholder="Пароль" autocomplete="current-password" />
-      <button id="btnLogin" type="button">Войти</button>
+      <button id="btnLogin"  type="button">Войти</button>
       <button id="btnLogout" type="button">Выйти</button>
       <p id="status">Не авторизован</p>
     </div>
@@ -25,6 +25,7 @@
     <!-- Фильтр задач -->
     <div id="filterGroup" class="form-group">
       <label for="statusFilter">Фильтр по статусу:</label>
+      <!-- можно оставить onchange, если уже используете -->
       <select id="statusFilter" onchange="filterTasks()">
         <option value="все">Все</option>
         <option value="новая">Новая</option>
@@ -35,19 +36,19 @@
       </select>
     </div>
 
-    <button id="btnTestSound" onclick="testSound()">Тест звука</button>
+    <button id="btnTestSound" type="button">Тест звука</button>
 
     <!-- Список задач -->
     <div id="taskList"></div>
   </div>
 
-  <!-- Плавающая кнопка -->
-  <button class="fab" type="button" aria-label="Добавить задачу" onclick="openModal()"></button>
+  <!-- Плавающая кнопка (label и плюс рисуются через CSS) -->
+  <button class="fab" id="btnOpenModal" type="button" aria-label="Добавить задачу"></button>
 
   <!-- Модалка: новая задача -->
-  <div id="taskModal" class="modal">
-    <div class="modal-content">
-      <h2>Новая задача</h2>
+  <div id="taskModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="taskDialogTitle">
+    <div class="modal-content" tabindex="-1">
+      <h2 id="taskDialogTitle">Новая задача</h2>
 
       <div class="form-group">
         <label for="taskTitle">Название:</label>
@@ -69,16 +70,16 @@
       </div>
 
       <div class="modal-buttons">
-        <button class="save-btn" onclick="addTask(); closeModal();">Сохранить</button>
-        <button class="cancel-btn" onclick="closeModal()">Отмена</button>
+        <button id="btnTaskSave"   class="save-btn"   type="button">Сохранить</button>
+        <button id="btnTaskCancel" class="cancel-btn" type="button">Отмена</button>
       </div>
     </div>
   </div>
 
   <!-- Модалка: управление ответственными -->
-  <div id="assigneesModal" class="modal">
-    <div class="modal-content">
-      <h2>Список ответственных</h2>
+  <div id="assigneesModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="assigneesDialogTitle">
+    <div class="modal-content" tabindex="-1">
+      <h2 id="assigneesDialogTitle">Список ответственных</h2>
 
       <div class="form-group">
         <label for="assigneeInput">Добавить нового:</label>
@@ -91,23 +92,13 @@
       <div id="assigneesList" class="chips"></div>
 
       <div class="modal-buttons">
-        <button class="cancel-btn" onclick="closeAssigneesModal()">Готово</button>
+        <button id="btnAssigneesDone" class="cancel-btn" type="button">Готово</button>
       </div>
     </div>
   </div>
 
-  <!-- Скрипты -->
-  <script type="module" src="auth.js?v=64"></script>
-  <script src="script.js?v=64" defer></script>
+  <!-- Скрипты (поднимите версии для кэша) -->
+  <script type="module" src="auth.js?v=65"></script>
+  <script src="script.js?v=65" defer></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
