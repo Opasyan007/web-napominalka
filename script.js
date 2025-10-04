@@ -187,7 +187,12 @@ function checkDeadlines() {
 }
 function testSound() {
   if (!isLoggedIn()) { alert('Сначала войдите.'); return; }
-  reminderSound.play().catch(err => console.log("Ошибка воспроизведения:", err));
+  try {
+    reminderSound.currentTime = 0;
+    reminderSound.play().catch(err => console.log("Ошибка воспроизведения:", err));
+  } catch (e) {
+    console.log("TestSound error:", e);
+  }
 }
 
 // ====== Старт / привязки ======
@@ -205,8 +210,9 @@ document.addEventListener("DOMContentLoaded", () => {
   renderTasks();
   checkDeadlines();
 
-  // Разрешаем звук после первого клика
-  document.body.addEventListener("click", () => {
+  // Разрешаем звук после первого клика (но не на кнопке теста)
+  document.body.addEventListener("click", (e) => {
+    if (e.target?.closest?.('#btnTestSound')) return; // не мешаем тестовой кнопке
     reminderSound.play().then(() => {
       reminderSound.pause();
       reminderSound.currentTime = 0;
@@ -215,12 +221,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }, { once: true });
 
   // ===== Привязки кнопок / модалки
-  const btnOpenModal      = document.getElementById('btnOpenModal');
-  const btnTaskSave       = document.getElementById('btnTaskSave');
-  const btnTaskCancel     = document.getElementById('btnTaskCancel');
-  const btnManageAssignees= document.getElementById('btnManageAssignees');
-  const btnAddAssignee    = document.getElementById('btnAddAssignee');
-  const btnAssigneesDone  = document.getElementById('btnAssigneesDone');
+  const btnOpenModal       = document.getElementById('btnOpenModal');
+  const btnTaskSave        = document.getElementById('btnTaskSave');
+  const btnTaskCancel      = document.getElementById('btnTaskCancel');
+  const btnManageAssignees = document.getElementById('btnManageAssignees');
+  const btnAddAssignee     = document.getElementById('btnAddAssignee');
+  const btnAssigneesDone   = document.getElementById('btnAssigneesDone');
+  const btnTestSound       = document.getElementById('btnTestSound');
 
   btnOpenModal?.addEventListener('click', openModal);
   btnTaskSave?.addEventListener('click', () => { if (addTask()) closeModal(); });
@@ -232,8 +239,13 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('assigneeInput').value = '';
     document.getElementById('assigneeInput').focus();
   });
-  // <<< ВОТ ЭТОГО НЕ ХВАТАЛО
   btnAssigneesDone?.addEventListener('click', closeAssigneesModal);
+
+  // 👇 теперь тест звука реально тестирует звук
+  btnTestSound?.addEventListener('click', (e) => {
+    e.preventDefault();
+    testSound();
+  });
 
   const taskModal      = document.getElementById('taskModal');
   const assigneesModal = document.getElementById('assigneesModal');
