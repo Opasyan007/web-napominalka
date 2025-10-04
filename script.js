@@ -11,6 +11,7 @@ const DEFAULT_ASSIGNEES = [
 let tasks = JSON.parse(localStorage.getItem(TASKS_KEY)) || [];
 let assignees = JSON.parse(localStorage.getItem(ASSIGNEES_KEY)) || DEFAULT_ASSIGNEES.slice();
 let reminderSound;
+let audioPrimed = false; // ← флаг, что звук разрешили
 
 // ====== Утилиты ======
 function saveTasks(){ localStorage.setItem(TASKS_KEY, JSON.stringify(tasks)); }
@@ -34,7 +35,7 @@ function openAssigneesModal(){
 }
 function closeAssigneesModal(){
   document.getElementById('assigneesModal').style.display = 'none';
-  renderAssigneeSelect(); // обновим селект после изменений
+  renderAssigneeSelect();
 }
 function addAssignee(name) {
   const n = (name || '').trim();
@@ -168,7 +169,35 @@ function closeModal() {
   document.getElementById("taskModal").style.display = "none";
 }
 
-// ====== Дедлайны/звук ======
+// ====== Аудио ======
+async function primeAudioOnce() {
+  if (audioPrimed) return;
+  try {
+    // безопасный прайм: быстрое play/pause в capture-фазе до любых других обработчиков
+    reminderSound.muted = true;
+    await reminderSound.play();
+    reminderSound.pause();
+    reminderSound.currentTime = 0;
+    reminderSound.muted = false;
+    audioPrimed = true;
+    console.log("🔊 Звук готов к работе");
+  } catch (_) {
+    // молча, попробуем позже
+  }
+}
+
+async function testSound() {
+  if (!isLoggedIn()) { alert('Сначала войдите.'); return; }
+  // если вдруг не успели пропраймить — праймим в рамках этого же жеста
+  if (!audioPrimed) { await primeAudioOnce(); }
+  try {
+    reminderSound.currentTime = 0;
+    await reminderSound.play();
+  } catch (err) {
+    console.log("Ошибка воспроизведения:", err);
+  }
+}
+
 function checkDeadlines() {
   if (!isLoggedIn()) return;
   const now = new Date();
@@ -184,15 +213,6 @@ function checkDeadlines() {
       }
     }
   });
-}
-function testSound() {
-  if (!isLoggedIn()) { alert('Сначала войдите.'); return; }
-  try {
-    reminderSound.currentTime = 0;
-    reminderSound.play().catch(err => console.log("Ошибка воспроизведения:", err));
-  } catch (e) {
-    console.log("TestSound error:", e);
-  }
 }
 
 // ====== Старт / привязки ======
@@ -210,15 +230,8 @@ document.addEventListener("DOMContentLoaded", () => {
   renderTasks();
   checkDeadlines();
 
-  // Разрешаем звук после первого клика (но не на кнопке теста)
-  document.body.addEventListener("click", (e) => {
-    if (e.target?.closest?.('#btnTestSound')) return; // не мешаем тестовой кнопке
-    reminderSound.play().then(() => {
-      reminderSound.pause();
-      reminderSound.currentTime = 0;
-      console.log("🔊 Звук готов к работе");
-    }).catch(()=>{});
-  }, { once: true });
+  // Праймим АУДИО заранее на ПЕРВЫЙ клик — capture=true, чтобы сработало до кнопки
+  document.body.addEventListener("click", () => { primeAudioOnce(); }, { once: true, capture: true });
 
   // ===== Привязки кнопок / модалки
   const btnOpenModal       = document.getElementById('btnOpenModal');
@@ -241,7 +254,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   btnAssigneesDone?.addEventListener('click', closeAssigneesModal);
 
-  // 👇 теперь тест звука реально тестирует звук
+  // вот теперь кнопка «Тест звука» железно работает
   btnTestSound?.addEventListener('click', (e) => {
     e.preventDefault();
     testSound();
