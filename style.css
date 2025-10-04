@@ -318,6 +318,17 @@ body.logged-out .fab {
     0 12px 28px rgba(0,0,0,.28),
     0 0 0 6px rgba(255,255,255,.45) !important; /* внешнее белое кольцо оставили */
 }
+<style id="fab-label-fix">
+  /* Чёткая надпись внутри FAB на всех экранах */
+  .fab::after{
+    -webkit-text-stroke: 0 !important;                 /* убрать чёрную обводку */
+    text-shadow: 0 1px 2px rgba(0,0,0,.35) !important;  /* мягкая тень вместо обводки */
+    color: #fff !important;
+    font-weight: 700 !important;
+    letter-spacing: .2px !important;
+  }
+</style>
+
 
 
 
