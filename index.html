@@ -1,68 +1,54 @@
-<!DOCTYPE html>
-<html lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Менеджер задач - 50 Паскаль</title>
 
-  <!-- важно: версия для сброса кэша -->
+  <!-- версия для сброса кэша -->
   <link rel="stylesheet" href="style.css?v=39" />
 
-  <style id="fab-hotfix">
-    /* MOBILE: пилюля с белой окантовкой + плюс с белой окантовкой */
-    @media (max-width: 599.98px) {
-      .fab{
-        left:16px !important;
-        right:16px !important;
-        bottom:calc(18px + env(safe-area-inset-bottom)) !important;
-        width:auto !important;
-        height:56px !important;
-        border-radius:999px !important;
-        padding:0 18px !important;
-        background: linear-gradient(135deg, #0ea5e9, #22c55e) !important;
-        border:2px solid #fff !important;
-        box-shadow: 0 12px 28px rgba(0,0,0,.28),
-                    0 0 0 6px rgba(255,255,255,.45) !important;
-        font-size:0 !important; /* скрываем старый '+' */
-        animation: fabPulse 2.8s ease-out infinite;
-      }
-      .fab::before{
-        content:"+" !important;
-        display:inline-block !important;
-        margin-right:10px !important;
-        font-size:28px !important;
-        line-height:1 !important;
-        color:#0a6fde !important;
-        -webkit-text-stroke:2px #fff !important;
-        text-shadow:
-          0 1px 0 #fff,  0 -1px 0 #fff,
-          1px 0 0 #fff, -1px  0 0 #fff,
-          1px 1px 0 #fff, -1px -1px 0 #fff,
-          1px -1px 0 #fff, -1px  1px 0 #fff !important;
-      }
-      .fab::after{
-        position:static !important;
-        display:inline-block !important;
-        margin-left:0 !important;
-        opacity:1 !important;
-        transform:none !important;
-        background:transparent !important;
-        color:#fff !important;
-        padding:0 !important;
-        box-shadow:none !important;
-        content:"Добавить задачу" !important;
-        font-size:16px !important;
-        line-height:1 !important;
-      }
-    }
-    <style id="fab-outline-desktop">
-/* TABLET & DESKTOP: белая окантовка у плюса в круглой FAB */
-@media (min-width: 600px) {
-  /* сам плюс (это текст внутри .fab) */
+  <!-- ЕДИНЫЙ FAB: пилюля + "+" с белой окантовкой + подпись -->
+  <style id="fab-unify">
   .fab{
-    color:#0a6fde !important;            /* заливка плюса (можно сменить) */
-    -webkit-text-stroke:2px #fff !important; /* белая окантовка для Chrome/Safari */
-    /* фоллбэк для Firefox – имитация обводки тенями */
+    position: fixed;
+    left: 16px !important;
+    right: 16px !important;
+    bottom: calc(18px + env(safe-area-inset-bottom)) !important;
+    z-index: 9999;
+
+    height: 56px !important;
+    width: auto !important;
+    border-radius: 999px !important;
+    padding: 0 20px !important;
+
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+
+    background: linear-gradient(135deg, #0ea5e9, #22c55e) !important;
+    border: 2px solid #fff !important;                 /* белая рамка */
+    box-shadow:
+      0 12px 28px rgba(0,0,0,.28),
+      0 0 0 6px rgba(255,255,255,.45) !important;       /* внешнее белое кольцо */
+
+    font-size: 0 !important;                            /* прячем исходный '+' из HTML */
+    color: #fff !important;
+    cursor: pointer;
+    transition: transform .18s ease !important;
+    animation: fabPulse 2.4s ease-out infinite !important; /* keyframes есть в style.css */
+  }
+
+  /* плюс с белой окантовкой */
+  .fab::before{
+    content: "+" !important;
+    display: inline-block !important;
+    font-size: 28px !important;
+    line-height: 1 !important;
+    margin-right: 2px !important;
+
+    color: #0a6fde !important;                          /* заливка плюса */
+    -webkit-text-stroke: 2px #fff !important;           /* окантовка (WebKit) */
+    /* фоллбэк для Firefox — имитация окантовки тенями */
     text-shadow:
       0 1px 0 #fff,  0 -1px 0 #fff,
       1px 0 0 #fff, -1px  0 0 #fff,
@@ -70,14 +56,42 @@
       1px -1px 0 #fff, -1px  1px 0 #fff !important;
   }
 
-  /* подсказку не обводим, чтобы оставалась читабельной */
+  /* подпись — всегда видна */
   .fab::after{
-    -webkit-text-stroke:0 transparent !important;
-    text-shadow:none !important;
+    content: "Добавить задачу" !important;
+    position: static !important;
+    display: inline-block !important;
+    opacity: 1 !important;
+    transform: none !important;
+    background: transparent !important;
+    color: #fff !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    font-size: 16px !important;
+    line-height: 1 !important;
   }
-}
+
+  .fab:hover{ transform: translateY(-1px) scale(1.03) !important; }
+  .fab:active{ transform: translateY(1px) scale(.98) !important; }
+
+  /* чуть крупнее на широких экранах */
+  @media (min-width: 768px){
+    .fab{
+      left: 24px !important;
+      right: 24px !important;
+      height: 64px !important;
+      padding: 0 24px !important;
+    }
+    .fab::before{ font-size: 32px !important; }
+    .fab::after{ font-size: 18px !important; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .fab{ animation: none !important; }
+  }
   </style>
 </head>
+
 
 <body>
   <div class="container">
@@ -165,6 +179,7 @@
 
 </body>
 </html>
+
 
 
 
