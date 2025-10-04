@@ -9,17 +9,13 @@ const DEFAULT_ASSIGNEES = [
 ];
 
 let tasks = JSON.parse(localStorage.getItem(TASKS_KEY)) || [];
-let assignees = JSON.parse(localStorage.getItem(ASSIGNEES_KEY)) || DEFAULT_ASSIGНЕES.slice();
+let assignees = JSON.parse(localStorage.getItem(ASSIGNEES_KEY)) || DEFAULT_ASSIGNEES.slice();
 let reminderSound;
 
 // ====== Утилиты ======
 function saveTasks(){ localStorage.setItem(TASKS_KEY, JSON.stringify(tasks)); }
 function saveAssignees(){ localStorage.setItem(ASSIGNEES_KEY, JSON.stringify(assignees)); }
-
-// ✅ надёжная проверка авторизации
-function isLoggedIn(){
-  return window.__loggedIn === true || document.body.classList.contains('logged-in');
-}
+function isLoggedIn(){ return window.__loggedIn === true || document.body.classList.contains('logged-in'); }
 
 // ====== Рендер выпадашки "Ответственный" ======
 function renderAssigneeSelect() {
@@ -39,17 +35,14 @@ function openAssigneesModal(){
 
 function closeAssigneesModal(){
   document.getElementById('assigneesModal').style.display = 'none';
-  renderAssigneeSelect(); // обновим селект после изменений
+  renderAssigneeSelect();
 }
 
 function addAssignee(name) {
   const n = (name || '').trim();
-  if (!n) return alert('Введите ФИО');
-
-  // защита от дублей (без учёта регистра/лишних пробелов)
+  if (!n) { alert('Введите ФИО'); return; }
   const exists = assignees.some(a => a.replace(/\s+/g,' ').trim().toLowerCase() === n.toLowerCase());
-  if (exists) return alert('Такой человек уже есть в списке');
-
+  if (exists) { alert('Такой человек уже есть в списке'); return; }
   assignees.push(n);
   saveAssignees();
   renderAssigneesList();
@@ -86,7 +79,7 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// Кнопки в модалке управлением ответственными
+// Кнопки в модалке «Ответственные»
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btnManageAssignees')?.addEventListener('click', openAssigneesModal);
   document.getElementById('btnAddAssignee')?.addEventListener('click', () => {
@@ -98,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ====== Задачи ======
 function addTask() {
-  if (!isLoggedIn()) { alert('Сначала войдите.'); return; }
+  if (!isLoggedIn()) { alert('Сначала войдите.'); return false; }
 
   const title = document.getElementById('taskTitle').value.trim();
   const deadline = document.getElementById('taskDeadline').value;
@@ -106,7 +99,7 @@ function addTask() {
 
   if (!title || !deadline || !assignedTo) {
     alert('Заполните все поля и выберите ответственного');
-    return;
+    return false;
   }
 
   const task = {
@@ -126,6 +119,8 @@ function addTask() {
   document.getElementById('taskTitle').value = '';
   document.getElementById('taskDeadline').value = '';
   document.getElementById('assignedTo').value = '';
+
+  return true;
 }
 
 function renderTasks(filter = "все") {
@@ -156,7 +151,6 @@ function renderTasks(filter = "все") {
         </select>
         <button onclick="deleteTask(${task.id})">Удалить</button>
       `;
-
       if (new Date(task.deadline) < now && task.status !== 'выполнена') {
         taskCard.classList.add('overdue');
       }
@@ -181,13 +175,14 @@ function filterTasks() {
   renderTasks(filter);
 }
 
-// ====== Модалки ======
+// ====== Модалки (новая задача) ======
 function openModal() {
   if (!isLoggedIn()) { alert('Сначала войдите.'); return; }
   document.getElementById("taskModal").style.display = "flex";
 }
-
-// closeAssigneesModal() уже объявлена сверху (и обновляет селект)
+function closeModal() {
+  document.getElementById("taskModal").style.display = "none";
+}
 
 // ====== Дедлайны/звук ======
 function checkDeadlines() {
@@ -218,7 +213,7 @@ document.addEventListener("DOMContentLoaded", () => {
   reminderSound = new Audio("sound/mixkit-wrong-answer-fail-notification-946.mp3");
   reminderSound.volume = 1.0;
 
-  // зафиксируем дефолт только при первом запуске
+  // если нет списка в LS — положим дефолт
   if (!localStorage.getItem(ASSIGNEES_KEY)) {
     saveAssignees();
   }
@@ -235,12 +230,29 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("🔊 Звук готов к работе");
     }).catch(()=>{});
   }, { once: true });
+
+  // ===== Привязки кнопок модалок/ FAB (без inline) =====
+  document.getElementById('btnOpenModal')?.addEventListener('click', openModal);
+  document.getElementById('btnTaskSave')?.addEventListener('click', () => { if (addTask()) closeModal(); });
+  document.getElementById('btnTaskCancel')?.addEventListener('click', closeModal);
+
+  // закрытие кликом по фону
+  const taskModal = document.getElementById('taskModal');
+  taskModal?.addEventListener('click', (e) => { if (e.target === taskModal) closeModal(); });
+
+  // и по Esc
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (taskModal?.style.display === 'flex') closeModal();
+      const assigneesModal = document.getElementById('assigneesModal');
+      if (assigneesModal?.style.display === 'flex') closeAssigneesModal();
+    }
+  });
 });
 
 // реакция на смену авторизации от auth.js
 window.addEventListener('auth-changed', () => {
   renderTasks();
-  // при необходимости можно тут же пересчитать доступность кнопок
 });
 
 // таймер обновлений
@@ -249,11 +261,12 @@ setInterval(() => {
   checkDeadlines();
 }, 30000);
 
-// Экспорт (для inline-обработчиков)
+// Экспорт (если где-то остались inline-обработчики)
 window.addTask = addTask;
 window.changeStatus = changeStatus;
 window.deleteTask = deleteTask;
 window.filterTasks = filterTasks;
 window.openModal = openModal;
+window.closeModal = closeModal;
 window.openAssigneesModal = openAssigneesModal;
 window.closeAssigneesModal = closeAssigneesModal;
