@@ -6,10 +6,7 @@
   <!-- версия для сброса кэша -->
   <link rel="stylesheet" href="style.css?v=39" />
 
-  <!-- ЕДИНЫЙ FAB: пилюля + "+" с белой окантовкой + подпись -->
-  - border: 2px solid #fff !important;
-  + border: 2px solid #111 !important; /* тёмная окантовка */
-
+<style id="fab-unify">
   .fab{
     position: fixed;
     left: 16px !important;
@@ -28,19 +25,23 @@
     gap: 10px !important;
 
     background: linear-gradient(135deg, #0ea5e9, #22c55e) !important;
-    border: 2px solid #fff !important;                 /* белая рамка */
+
+    /* ← ТЁМНАЯ ОКАНТОВКА ДЛЯ ВСЕХ УСТРОЙСТВ */
+    border: 2px solid #111 !important;
+
+    /* белое внешнее «кольцо», чтобы кнопка не терялась */
     box-shadow:
       0 12px 28px rgba(0,0,0,.28),
-      0 0 0 6px rgba(255,255,255,.45) !important;       /* внешнее белое кольцо */
+      0 0 0 6px rgba(255,255,255,.45) !important;
 
-    font-size: 0 !important;                            /* прячем исходный '+' из HTML */
+    font-size: 0 !important; /* прячем старый '+' из HTML */
     color: #fff !important;
     cursor: pointer;
     transition: transform .18s ease !important;
     animation: fabPulse 2.4s ease-out infinite !important; /* keyframes есть в style.css */
   }
 
-  /* плюс с белой окантовкой */
+  /* Плюс оставляем с белой окантовкой — контрастнее на градиенте */
   .fab::before{
     content: "+" !important;
     display: inline-block !important;
@@ -48,9 +49,8 @@
     line-height: 1 !important;
     margin-right: 2px !important;
 
-    color: #0a6fde !important;                          /* заливка плюса */
-    -webkit-text-stroke: 2px #fff !important;           /* окантовка (WebKit) */
-    /* фоллбэк для Firefox — имитация окантовки тенями */
+    color: #0a6fde !important;
+    -webkit-text-stroke: 2px #fff !important;
     text-shadow:
       0 1px 0 #fff,  0 -1px 0 #fff,
       1px 0 0 #fff, -1px  0 0 #fff,
@@ -58,7 +58,7 @@
       1px -1px 0 #fff, -1px  1px 0 #fff !important;
   }
 
-  /* подпись — всегда видна */
+  /* Подпись — всегда видна */
   .fab::after{
     content: "Добавить задачу" !important;
     position: static !important;
@@ -91,7 +91,8 @@
   @media (prefers-reduced-motion: reduce){
     .fab{ animation: none !important; }
   }
-  </style>
+</style>
+
 </head>
 
 
@@ -176,11 +177,12 @@
   </div>
 
   <!-- Подключения скриптов -->
-  <script type="module" src="auth.js?v=45"></script>
-<script src="script.js?v=45" defer></script>
+  <script type="module" src="auth.js?v=46"></script>
+<script src="script.js?v=46" defer></script>
 
 </body>
 </html>
+
 
 
 
