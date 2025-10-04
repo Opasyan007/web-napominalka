@@ -340,4 +340,50 @@ body.logged-out .fab {
     text-shadow: 0 1px 2px rgba(0,0,0,.35) !important;
   }
 }
+/* === FAB: убрать внутренний текстовый плюс полностью === */
+.fab{
+  font-size: 0 !important;         /* прячем символ '+' в самом элементе */
+  line-height: 0 !important;
+  color: transparent !important;   /* на всякий случай */
+  -webkit-text-stroke: 0 !important;
+  text-shadow: none !important;
+}
+
+/* Плюс рисуем ТОЛЬКО через SVG-маску (гладкие края) */
+.fab::before{
+  content: "" !important;
+  display: inline-block !important;
+  width: 28px !important;
+  height: 28px !important;
+  margin-right: 10px !important;
+
+  background: #fff !important;   /* цвет плюса */
+  -webkit-mask: url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
+  <path d='M12 3v18M3 12h18' stroke='black' stroke-width='4' stroke-linecap='round' fill='none'/>\
+</svg>") center / 100% 100% no-repeat !important;
+          mask: url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
+  <path d='M12 3v18M3 12h18' stroke='black' stroke-width='4' stroke-linecap='round' fill='none'/>\
+</svg>") center / 100% 100% no-repeat !important;
+
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,.25)) !important;
+}
+
+/* (опционально) Чуть крупнее плюс на десктопе/планшете */
+@media (min-width: 768px){
+  .fab::before{ width: 30px !important; height: 30px !important; margin-right: 0 !important; }
+}
+
+/* Фоллбэк на очень старые браузеры без mask — можно удалить, если не нужен */
+@supports not (-webkit-mask:url("")) {
+  .fab::before{
+    content: "+" !important;
+    background: none !important;
+    width: auto !important; height: auto !important; margin-right: 10px !important;
+    font-size: 28px !important; line-height: 1 !important; color:#fff !important;
+    -webkit-text-stroke: 0 !important; text-shadow: 0 1px 2px rgba(0,0,0,.35) !important;
+  }
+}
+
 
